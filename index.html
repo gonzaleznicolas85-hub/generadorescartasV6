@@ -3,16 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Sistema Completo Pro</title>
+  <title>Bot Preview - Onboarding & Sugerencias Previas</title>
   <style>
-    /* ESTILOS GENERALES */
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    
+    /* ONBOARDING SCREEN */
+    #onboardingScreen { text-align: center; }
+    #onboardingScreen h2 { margin-top: 0; color: #111827; }
+    #onboardingScreen p { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+    .onboard-group { text-align: left; margin-bottom: 16px; }
+    .onboard-group label { display: block; font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 6px; }
+    .onboard-group input, .onboard-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+    .onboard-group input:focus, .onboard-group select:focus { border-color: #2563eb; outline: none; }
+    .price-highlight { border: 2px solid #3b82f6 !important; background: #eff6ff; font-weight: bold; }
+
+    /* BOT CHAT */
     .quick-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
     .ideal-btn { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
     .ideal-btn:hover { background: #dbeafe; border-color: #93c5fd; }
-    
-    /* BOT CHAT Y FORMULARIOS */
     .chat-bubble { background: #f3f4f6; color: #111827; padding: 14px 18px; border-radius: 16px 16px 16px 0; font-size: 15px; line-height: 1.5; margin-bottom: 16px; display: inline-block; max-width: 90%; }
     .options-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
     .option-btn { background: #ffffff; border: 1px solid #d1d5db; border-radius: 20px; padding: 10px 18px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.2s ease; }
@@ -23,24 +32,22 @@
     .price-row { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; gap: 10px; flex-wrap: wrap; }
     .price-inputs { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-grow: 1; }
     .price-row input, .form-input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box; }
-    .price-row input { width: 85px; text-align: right; }
-    .price-row input:focus, .form-input:focus { border-color: #111111; }
+    .price-row input { width: 95px; text-align: right; font-weight: bold; }
     .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
     .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
     .form-group label { font-size: 13px; font-weight: bold; color: #374151; }
-    .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+    .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px;}
     .action-btn:hover { background: #374151; }
     .action-btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .finish-btn { background: #059669; margin-top: 24px; }
     .finish-btn:hover { background: #047857; }
     .restart-btn { background: transparent; color: #6b7280; border: none; font-size: 13px; text-decoration: underline; cursor: pointer; margin-top: 10px; margin-bottom: 20px; }
 
-    /* RESUMEN FINAL, DRAG & DROP Y BOTONES EDICION */
+    /* RESUMEN FINAL */
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
-    
     .summary-item { background: #ffffff; border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease; }
     .summary-item.dragging { opacity: 0.4; border: 2px dashed #9ca3af; transform: scale(0.98); }
     .summary-item.over { border-top: 3px solid #3b82f6; }
@@ -48,12 +55,9 @@
     .drag-handle:active { cursor: grabbing; }
     .summary-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
     .summary-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    
     .delete-btn, .edit-btn { border: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
     .delete-btn { background: #fee2e2; color: #991b1b; }
-    .delete-btn:hover { background: #fecaca; }
     .edit-btn { background: #e0f2fe; color: #0369a1; }
-    .edit-btn:hover { background: #bae6fd; }
 
     /* PANTALLA EXITO Y TOAST */
     .success-screen { text-align: center; display: none; padding: 20px 0; }
@@ -77,14 +81,42 @@
 <body>
 
   <div class="bot-card">
-    <div id="mainAppContent">
-      <div class="quick-actions">
-        <button class="ideal-btn" onclick="cargarCartaIdeal()" id="btnIdeal" style="display:none;">✨ Cargar Carta Ideal</button>
+    
+    <div id="onboardingScreen">
+      <h2>⚙️ Configuración Inicial</h2>
+      <p>Completá estos datos para personalizar tu menú digital y activar el motor inteligente de precios.</p>
+      
+      <div class="onboard-group">
+        <label>Nombre del Restaurante / Bar</label>
+        <input type="text" id="confNombre" placeholder="Ej: Bocky Bar & Grill">
+      </div>
+      <div class="onboard-group">
+        <label>Dirección</label>
+        <input type="text" id="confDir" placeholder="Ej: Av. San Martín 1234, Ciudad">
+      </div>
+      <div class="onboard-group">
+        <label>Estilo Visual del Menú (PDF)</label>
+        <select id="confEstilo">
+          <option value="Minimalista">Minimalista (Limpio y moderno)</option>
+          <option value="Elegante">Elegante (Clásico y formal)</option>
+          <option value="Bold">Bold (Impactante y fuerte)</option>
+        </select>
+      </div>
+      <div class="onboard-group">
+        <label style="color:#2563eb;">💰 Precio de Referencia (Cerveza Clásica 1L)</label>
+        <p style="font-size: 12px; color: #6b7280; margin: 0 0 8px 0; font-weight: normal;">Usaremos este precio base para sugerirte los precios del resto de las bebidas automáticamente.</p>
+        <input type="number" id="confPrecioBase" class="price-highlight" placeholder="$ (Ej: 4500)">
       </div>
 
-      <div id="botInterface">
-        <div class="chat-bubble">⏳ Sincronizando catálogo con tu Google Sheet...</div>
+      <button class="action-btn" onclick="iniciarApp()" id="btnIniciarOnboard" disabled>⏳ Conectando base de datos...</button>
+    </div>
+
+    <div id="mainAppContent" style="display: none;">
+      <div class="quick-actions">
+        <button class="ideal-btn" onclick="cargarCartaIdeal()" id="btnIdeal">✨ Cargar Carta Ideal</button>
       </div>
+
+      <div id="botInterface"></div>
 
       <div class="summary-container">
         <div id="emptyState" style="color: #9ca3af; font-size: 14px; text-align: center; padding: 20px 0;">Todavía no hay bebidas cargadas.</div>
@@ -101,7 +133,7 @@
       <p>Escaneá el QR para ver la carta o descargalo para tus mesas.</p>
       <div class="qr-box"><img id="qrImage" src="" alt="QR Generando..."></div><br><br>
       <button class="action-btn" onclick="descargarQR()" style="background: #2563eb;">⬇️ Descargar QR</button>
-      <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Armar otra carta</button>
+      <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Armar nueva carta</button>
     </div>
   </div>
 
@@ -109,17 +141,21 @@
     <button class="close-toast" onclick="cerrarToast()">✖</button>
     <div class="toast-title">💡 Estrategia de Precios</div>
     <div id="toastContent"></div>
-    <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Aplicar sugerencias a esta carga</button>
+    <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Autocompletar Precios</button>
   </div>
 
   <script>
     // ====================================================================
-    // URL DE TU APPS SCRIPT
+    // URL DE APPS SCRIPT
     // ====================================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo7iHruygBKneRj2A4mnWv5usE2dFZb2BPTfr5smozMVTzr5Sf-Nj8Phwr9qweoR59/exec';
     
     let db = {}; 
+    let restauranteConfig = {}; // Guarda la configuración del paso 0
+    let precioBaseCoreGlobal = 0; // Guardará el precio de referencia para las sugerencias pre-tipeo
     let sugerenciasActuales = null; 
+
+    // Estado de la app
     let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0; let ordenManualActivado = false; 
     
     const botInterface = document.getElementById('botInterface');
@@ -135,76 +171,91 @@
     function formatPrecio(v) { return !v ? 'A definir' : (v.toString().startsWith('$') ? v : `$${v}`); }
 
     // ==========================================
-    // INICIALIZACIÓN Y FETCH
+    // 1. CARGA INICIAL
     // ==========================================
-    async function initApp() {
+    async function cargarBD() {
       try {
         const response = await fetch(SCRIPT_URL);
         db = await response.json();
-        document.getElementById('btnIdeal').style.display = 'flex';
-        renderBot();
+        // Habilitamos el botón de iniciar cuando la DB descarga
+        const btnIni = document.getElementById('btnIniciarOnboard');
+        btnIni.disabled = false;
+        btnIni.textContent = "Comenzar a armar carta";
       } catch (e) {
-        document.getElementById('botInterface').innerHTML = `<div class="chat-bubble" style="color:red">Error de conexión con Sheets. Revisá los permisos del script.</div>`;
+        document.getElementById('btnIniciarOnboard').textContent = "❌ Error de conexión (Revisar URL)";
       }
     }
 
-    // ==========================================
-    // MOTOR DE SUGERENCIAS Y REVENUE
-    // ==========================================
-    function calcularSugerencia(marca, calibre, precioIngresado, subcategoria) {
-      let precio = parseFloat(precioIngresado.replace(/[^0-9.]/g, ''));
-      if (isNaN(precio) || precio <= 0) return;
+    function iniciarApp() {
+      const nom = document.getElementById('confNombre').value.trim();
+      const base = parseFloat(document.getElementById('confPrecioBase').value);
+      
+      if(!nom) return alert("Por favor, ingresá el nombre del restaurante.");
+      if(!base || base <= 0) return alert("Por favor, ingresá un precio base válido para la cerveza.");
 
-      let baseCore = 0;
-      let rank = getSegmentRank(marca);
-
-      if (rank === 2) baseCore = precio;
-      else if (rank === 3) baseCore = precio / 1.10;
-      else if (rank === 4) baseCore = precio / 1.35;
-      else baseCore = precio;
-
-      baseCore = Math.round(baseCore);
-      sugerenciasActuales = {
-        core: baseCore,
-        corePlus: Math.round(baseCore * 1.10),
-        highEnd: Math.round(baseCore * 1.35),
-        trago: Math.round(baseCore * 2)
+      restauranteConfig = {
+        nombreLocal: nom,
+        direccion: document.getElementById('confDir').value.trim(),
+        estilo: document.getElementById('confEstilo').value
       };
+      
+      precioBaseCoreGlobal = base; // ACÁ ESTÁ LA MAGIA DEL ANCLA DE PRECIO
 
-      let html = `Basado en <strong>$${precio}</strong> de ${marca}:<ul class="toast-list">`;
-      if(rank!==2) html += `<li>Core (Ej: Quilmes): <strong>$${sugerenciasActuales.core}</strong></li>`;
-      if(rank!==3) html += `<li>Core Plus (Ej: Andes): <strong>$${sugerenciasActuales.corePlus}</strong></li>`;
-      if(rank!==4) html += `<li>High End (Ej: Stella): <strong>$${sugerenciasActuales.highEnd}</strong></li>`;
-      html += `<li>Tragos: <strong>$${sugerenciasActuales.trago}</strong></li></ul>`;
+      document.getElementById('onboardingScreen').style.display = 'none';
+      document.getElementById('mainAppContent').style.display = 'block';
+      renderBot();
+    }
 
-      document.getElementById('toastContent').innerHTML = html;
-      document.getElementById('toastSugerencia').classList.add('show');
+    // ==========================================
+    // 2. MOTOR DE SUGERENCIAS (OnFocus)
+    // ==========================================
+    function sugerirPrecios(marca, subcategoria, indexInput) {
+      if (precioBaseCoreGlobal <= 0) return; // Por si acaso
+
+      let rank = getSegmentRank(marca);
+      let sugestion = 0;
+      let mensaje = "";
+
+      // Calculamos cuánto debería costar basado en la ancla que puso en el Onboarding
+      if (subcategoria === 'Tragos') {
+        sugestion = Math.round(precioBaseCoreGlobal * 2);
+        mensaje = `El precio base de Cerveza es $${precioBaseCoreGlobal}.<br>Sugerencia para Tragos (Base x2):`;
+      } else {
+        if (rank === 2) sugestion = precioBaseCoreGlobal;
+        else if (rank === 3) sugestion = Math.round(precioBaseCoreGlobal * 1.10);
+        else if (rank === 4) sugestion = Math.round(precioBaseCoreGlobal * 1.35);
+        else sugestion = precioBaseCoreGlobal; // Value u otros
+
+        mensaje = `Basado en tu precio de referencia ($${precioBaseCoreGlobal}):`;
+      }
+
+      if (sugestion > 0) {
+        // Ponemos el placeholder en gris por si el usuario solo quiere mirar
+        document.getElementById(`price_${indexInput}`).placeholder = `$${sugestion}`;
+        
+        // Armamos el objeto para que el botón de autocompletar lo rellene
+        sugerenciasActuales = { valorSugerido: sugestion, inputId: `price_${indexInput}` };
+
+        let html = `${mensaje}<ul class="toast-list">
+          <li>Sugerido para <strong>${marca}</strong>: <span style="font-size:16px; color:#059669; font-weight:bold;">$${sugestion}</span></li>
+        </ul>`;
+        
+        document.getElementById('toastContent').innerHTML = html;
+        document.getElementById('toastSugerencia').classList.add('show');
+      }
     }
 
     function aplicarSugerenciasAutomatica() {
       if (!sugerenciasActuales) return;
-      selectedCombinations.forEach((item, i) => {
-        let inputNormal = document.getElementById(`price_${i}`);
-        if (!inputNormal) return;
-
-        let m = currentData.marca;
-        let r = getSegmentRank(m);
-        let val = 0;
-
-        if (currentData.subcategoria === 'Tragos') val = sugerenciasActuales.trago;
-        else if (r === 2) val = sugerenciasActuales.core;
-        else if (r === 3) val = sugerenciasActuales.corePlus;
-        else if (r === 4) val = sugerenciasActuales.highEnd;
-
-        if (val > 0) inputNormal.value = val;
-      });
+      let input = document.getElementById(sugerenciasActuales.inputId);
+      if (input) input.value = sugerenciasActuales.valorSugerido;
       cerrarToast();
     }
 
     function cerrarToast() { document.getElementById('toastSugerencia').classList.remove('show'); sugerenciasActuales = null; }
 
     // ==========================================
-    // FLUJO DEL BOT FRONTEND
+    // 3. FLUJO DEL BOT FRONTEND
     // ==========================================
     function renderBot() {
       botInterface.innerHTML = '';
@@ -223,7 +274,7 @@
       else if (step === 'combo_3') {
         let form = document.createElement('div');
         form.innerHTML = `<div class="form-group"><label>Comida</label><input type="text" id="comboComida" class="form-input" placeholder="Ej: Hamburguesa"></div><div class="hh-toggle-container"><input type="checkbox" id="hhToggle" onchange="document.getElementById('hhInputBox').style.display = this.checked ? 'block' : 'none'"><label for="hhToggle" style="margin:0; cursor:pointer;">Precio Happy Hour</label></div><div class="price-inputs" style="justify-content:flex-start;"><input type="text" id="comboPrecio" class="form-input" placeholder="Normal $"><div id="hhInputBox" style="display:none;"><input type="text" id="comboPrecioHH" class="form-input" placeholder="HH $" style="border-color:#f97316;"></div></div>`;
-        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '16px'; btn.textContent = 'Guardar Combo';
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Combo';
         btn.onclick = () => {
           let comida = document.getElementById('comboComida').value;
           if (!comida) return alert("Falta comida.");
@@ -237,10 +288,11 @@
       }
       else if (step === 'tragos_form') {
         let form = document.createElement('div');
-        form.innerHTML = `<div class="form-group"><label>Nombre</label><input type="text" id="tNom" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="tPrecio" class="form-input" onblur="calcularSugerencia('Trago','Vaso',this.value,'Tragos')"></div>`;
+        // Usamos onfocus para sugerir el precio del trago
+        form.innerHTML = `<div class="form-group"><label>Nombre</label><input type="text" id="tNom" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="price_0" class="form-input" onfocus="sugerirPrecios('Trago', 'Tragos', 0)"></div>`;
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Trago';
-        btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: formatPrecio(document.getElementById('tPrecio').value)}); resetBot(); };
-        botInterface.append(createBubble('Cargá el trago (al poner precio y salir de la caja, sugeriremos el de Cervezas):'), form, btn, createBackBtn(2));
+        btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: formatPrecio(document.getElementById('price_0').value)}); resetBot(); };
+        botInterface.append(createBubble('Cargá el trago. Al tocar la caja de precio, usaremos tu precio base para sugerirte:'), form, btn, createBackBtn(2));
       }
       else if (step === 3) {
         botInterface.append(createBubble('¿Marca?'), createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (s) => { currentData.marca = s; step = 4; renderBot(); }), createBackBtn(2));
@@ -252,7 +304,7 @@
         if(data.var.length===0) grid.innerHTML='<small>Sin variedades.</small>';
         let sel = document.createElement('select'); sel.className = 'form-input'; sel.id = 'calSel';
         data.cal.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
-        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '15px'; btn.textContent = 'Continuar';
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Continuar';
         btn.onclick = () => { 
           let chks = grid.querySelectorAll('input:checked');
           selectedCombinations = data.var.length===0 ? [{variedad:'', calibre:sel.value}] : Array.from(chks).map(cb => ({variedad: cb.value, calibre: sel.value}));
@@ -264,27 +316,32 @@
       else if (step === 5) {
         let hhContainer = document.createElement('div'); hhContainer.innerHTML = `<div class="hh-toggle-container"><input type="checkbox" id="globalHHToggle" onchange="toggleHHInputs(this.checked)"><label for="globalHHToggle" style="margin:0; cursor:pointer;">Activar Happy Hour</label></div>`;
         let grid = document.createElement('div'); grid.className = 'prices-grid';
+        
         selectedCombinations.forEach((item, i) => {
-          let blurEvent = (currentData.subcategoria === 'Cervezas') ? `onblur="calcularSugerencia('${currentData.marca}','${item.calibre}',this.value,'Cervezas')"` : '';
-          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><div class="price-inputs"><input type="text" id="price_${i}" placeholder="Normal $" ${blurEvent}><input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;"></div></div>`;
+          // APLICAMOS EL onfocus MAGICO ACA
+          let eventFocus = (currentData.subcategoria === 'Cervezas') ? `onfocus="sugerirPrecios('${currentData.marca}', 'Cervezas', ${i})"` : '';
+          
+          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><div class="price-inputs"><input type="text" id="price_${i}" placeholder="$" ${eventFocus}><input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;"></div></div>`;
         });
-        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Todo';
+        
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Bebidas';
         btn.onclick = () => {
           const useHH = document.getElementById('globalHHToggle').checked;
           selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value), precioHH: useHH ? formatPrecio(document.getElementById(`priceHH_${i}`).value) : null}); }); resetBot(); 
         };
-        botInterface.append(createBubble('Ingresá precios (al salir de la casilla se calcularán sugerencias si aplican):'), hhContainer, grid, btn, createBackBtn(4));
+        botInterface.append(createBubble('Hacé clic en la caja de precio para ver la sugerencia matemática:'), hhContainer, grid, btn, createBackBtn(4));
       }
     }
 
+    // UTILS
     function toggleHHInputs(show) { selectedCombinations.forEach((_, i) => document.getElementById(`priceHH_${i}`).style.display = show ? 'block' : 'none'); }
-    function createBubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.textContent = t; return d; }
+    function createBubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.innerHTML = t; return d; }
     function createOptions(a, cb) { let d = document.createElement('div'); d.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o; b.onclick = () => cb(o); d.appendChild(b); }); return d; }
     function createBackBtn(s) { let b = document.createElement('button'); b.className = 'restart-btn'; b.textContent = '← Volver'; b.onclick = () => { step=s; renderBot(); }; return b; }
     function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); ordenarItemsAgregados(); actualizarListas(); renderBot(); }
     
     // ==========================================
-    // DRAG & DROP
+    // 4. DRAG & DROP Y EDICIÓN
     // ==========================================
     let draggedItemId = null;
     function handleDragStart(e) { draggedItemId = this.dataset.id; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); }
@@ -304,9 +361,6 @@
       return false;
     }
 
-    // ==========================================
-    // EDICIÓN EN LÍNEA Y RENDERIZADO FINAL
-    // ==========================================
     function ordenarItemsAgregados() {
       if (ordenManualActivado) return;
       itemsAgregados.sort((a, b) => {
@@ -380,61 +434,55 @@
     }
 
     function cargarCartaIdeal() {
+      // Ajustamos los precios ideales en base a la configuración que puso el usuario!
       itemsAgregados.push(
         {id:idCounter++, categoria:"Sin alcohol", subcategoria:"Gaseosas", marca:"Pepsi", variedad:"Black", calibre:"Lata 354ml", precio:"A definir"},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:"$4500"},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:"$4950"}
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$${precioBaseCoreGlobal}`, precioHH: `$${Math.round(precioBaseCoreGlobal*0.8)}`},
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:`$${Math.round(precioBaseCoreGlobal*1.1)}`}
       );
       actualizarListas(); resetBot();
     }
 
     // ==========================================
-    // ENVÍO AL BACKEND (APPS SCRIPT) Y CÓDIGO QR
+    // 5. ENVÍO A BACKEND Y QR
     // ==========================================
     async function terminarCarta() {
       const btn = document.getElementById('btnTerminar');
-      btn.disabled = true;
-      btn.innerText = "Generando Documento...";
+      btn.disabled = true; btn.innerText = "Generando Documento y Diseño...";
 
       const payload = {
         items: itemsAgregados,
+        config: restauranteConfig, // Enviamos el estilo, nombre y dirección al Apps Script
         timestamp: new Date().toISOString()
       };
 
       try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await response.json();
 
         if (result.ok) {
           document.getElementById('mainAppContent').style.display = 'none';
           document.getElementById('successScreen').style.display = 'block';
-          
-          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
-          document.getElementById('qrImage').src = qrUrl;
+          document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
         } else {
           alert("Error del servidor: " + result.error);
-          btn.disabled = false;
-          btn.innerText = "Generar Menú y Crear QR";
+          btn.disabled = false; btn.innerText = "Generar Menú y Crear QR";
         }
       } catch (error) {
-        alert("Error al conectar con Google Sheets. Asegurate de que la URL termine en /exec y sea accesible.");
-        btn.disabled = false;
-        btn.innerText = "Generar Menú y Crear QR";
+        alert("Error al conectar con Google Sheets.");
+        btn.disabled = false; btn.innerText = "Generar Menú y Crear QR";
       }
     }
 
     function descargarQR() {
       fetch(document.getElementById('qrImage').src).then(resp => resp.blob()).then(blob => {
-        const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "QR_Menu.png";
+        const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `QR_${restauranteConfig.nombreLocal}.png`;
         document.body.appendChild(a); a.click(); a.remove();
       });
     }
 
-    initApp();
+    // INICIO DEL CICLO
+    cargarBD();
   </script>
 </body>
 </html>
