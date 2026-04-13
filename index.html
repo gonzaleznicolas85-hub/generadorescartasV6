@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta (Carta Ideal)</title>
+  <title>Bot Preview - Generador de Carta (Combos + Frases)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -250,6 +250,13 @@
       margin-top: 10px;
       margin-bottom: 20px;
     }
+    
+    .combo-desc {
+      color:#6b7280; 
+      font-size:12.5px; 
+      margin-top: 4px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -268,6 +275,11 @@
     <div class="summary-container">
       <div id="emptyState" style="color: #9ca3af; font-size: 14px; text-align: center; padding: 20px 0;">
         Todavía no agregaste bebidas a la carta.
+      </div>
+
+      <div id="sectionCombos" class="category-section">
+        <h4 class="category-title" style="color: #c026d3;">🍔 Combos Especiales</h4>
+        <div id="listCombos"></div>
       </div>
 
       <div id="sectionSinAlcohol" class="category-section">
@@ -360,9 +372,11 @@
     const sectionSinAlcohol = document.getElementById('sectionSinAlcohol');
     const sectionConAlcohol = document.getElementById('sectionConAlcohol');
     const sectionTragos = document.getElementById('sectionTragos');
+    const sectionCombos = document.getElementById('sectionCombos');
     const listSinAlcohol = document.getElementById('listSinAlcohol');
     const listConAlcohol = document.getElementById('listConAlcohol');
     const listTragos = document.getElementById('listTragos');
+    const listCombos = document.getElementById('listCombos');
     const btnTerminar = document.getElementById('btnTerminar');
 
     // ==========================================
@@ -370,19 +384,18 @@
     // ==========================================
     function cargarCartaIdeal() {
       const idealItems = [
-        // Sin alcohol
         { categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Black", calibre: "Lata 354ml", precio: "A definir" },
         { categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Regular", calibre: "Lata 354ml", precio: "A definir" },
         { categoria: "Sin alcohol", subcategoria: "Aguas", marca: "Eco de los Andes", variedad: "Sin Gas", calibre: "500ml", precio: "A definir" },
         { categoria: "Sin alcohol", subcategoria: "Cervezas 0.0%", marca: "Stella Artois", variedad: "0.0%", calibre: "Lata 473ml", precio: "A definir" },
-        
-        // Con alcohol
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Quilmes", variedad: "Clásica", calibre: "Botella 1 Litro", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Botella 1 Litro", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "IPA", calibre: "Lata 473ml", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "Roja", calibre: "Lata 473ml", precio: "A definir" },
-        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" }
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" },
+        // Agregamos un combo de prueba a la carta ideal
+        { categoria: "Combos", subcategoria: "Cervezas", marca: "Combo Stella Artois + Picada", variedad: "", calibre: "El combo perfecto: Picada para 2 acompañada de una Stella Artois.", precio: "A definir" }
       ];
 
       idealItems.forEach(item => {
@@ -391,7 +404,6 @@
       });
       
       actualizarListas();
-      
       currentData = {};
       selectedCombinations = [];
       step = 1;
@@ -403,32 +415,110 @@
       botInterface.innerHTML = ''; 
 
       if (step === 1) {
-        const bubble = createBubble('¡Hola! ¿Vamos con algo Con Alcohol o Sin Alcohol?');
-        const options = createOptions(Object.keys(db), (selected) => {
+        const bubble = createBubble('¡Hola! ¿Qué querés sumar a la carta?');
+        const options = createOptions(['Sin alcohol', 'Con alcohol', 'Combos'], (selected) => {
           currentData.categoria = selected;
-          step = 2; renderBot();
+          if (selected === 'Combos') {
+            step = 'combo_1';
+          } else {
+            step = 2; 
+          }
+          renderBot();
         });
         botInterface.append(bubble, options);
       } 
       
+      // ==========================================
+      // FLUJO DE COMBOS
+      // ==========================================
+      else if (step === 'combo_1') {
+        const bubble = createBubble('¡Armemos un combo! ¿Qué tipo de bebida querés incluir?');
+        const options = createOptions(['Gaseosas', 'Cervezas'], (selected) => {
+          currentData.comboTipoBebida = selected;
+          step = 'combo_2';
+          renderBot();
+        });
+        botInterface.append(bubble, options, createBackBtn(1));
+      }
+
+      else if (step === 'combo_2') {
+        const bubble = createBubble(`Elegí la marca de la bebida para el combo:`);
+        const marcasPath = currentData.comboTipoBebida === 'Gaseosas' ? db['Sin alcohol']['Gaseosas'] : db['Con alcohol']['Cervezas'];
+        const opcionesMarcas = Object.keys(marcasPath);
+        
+        const options = createOptions(opcionesMarcas, (selected) => {
+          currentData.marca = selected;
+          step = 'combo_3';
+          renderBot();
+        });
+        botInterface.append(bubble, options, createBackBtn('combo_1'));
+      }
+
+      else if (step === 'combo_3') {
+        const bubble = createBubble(`Elegiste ${currentData.marca}. Ahora decime con qué comida sale y el precio del combo:`);
+        const formContainer = document.createElement('div');
+        formContainer.innerHTML = `
+          <div class="form-group">
+            <label>Comida a elección</label>
+            <input type="text" id="comboComida" class="form-input" placeholder="Ej: Milanesa con papas">
+          </div>
+          <div class="form-group">
+            <label>Precio del Combo (Dejar vacío si es a definir)</label>
+            <input type="number" id="comboPrecio" class="form-input" placeholder="$">
+          </div>
+        `;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-btn';
+        saveBtn.textContent = 'Generar y Guardar Combo';
+        saveBtn.onclick = () => {
+          const comida = document.getElementById('comboComida').value.trim();
+          const precio = document.getElementById('comboPrecio').value;
+
+          if (!comida) { alert("Por favor, ingresá la comida."); return; }
+
+          // Generador de frases aleatorias de marketing
+          const frases = [
+            `Promo imperdible: disfrutá una ${currentData.marca} bien fría más ${comida}.`,
+            `El combo perfecto: ${comida} acompañada de una ${currentData.marca} refrescante.`,
+            `Date un gusto con esta promo especial: ${comida} + ${currentData.marca}.`,
+            `Para compartir (o no): Una ${currentData.marca} helada y ${comida}.`,
+            `Especial de la casa: ${comida} sale con ${currentData.marca}.`
+          ];
+          const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
+
+          itemsAgregados.push({
+            id: idCounter++,
+            categoria: 'Combos',
+            subcategoria: currentData.comboTipoBebida,
+            marca: `Combo ${currentData.marca} + ${comida}`,
+            variedad: '',
+            calibre: fraseAleatoria, // Guardamos la frase generada acá para mostrarla
+            precio: precio ? `$${precio}` : 'A definir'
+          });
+          
+          resetBot();
+        };
+
+        botInterface.append(bubble, formContainer, saveBtn, createBackBtn('combo_2'));
+      }
+
+      // ==========================================
+      // FLUJO NORMAL (Bebidas)
+      // ==========================================
       else if (step === 2) {
         const bubble = createBubble(`Elegiste ${currentData.categoria}. ¿Qué subcategoría querés sumar?`);
         const options = createOptions(Object.keys(db[currentData.categoria]), (selected) => {
           currentData.subcategoria = selected;
-          
-          if (selected === 'Tragos') {
-            step = 'tragos_form';
-          } else {
-            step = 3; 
-          }
+          if (selected === 'Tragos') step = 'tragos_form';
+          else step = 3; 
           renderBot();
         });
-        botInterface.append(bubble, options, createBackBtn());
+        botInterface.append(bubble, options, createBackBtn(1));
       } 
       
       else if (step === 'tragos_form') {
         const bubble = createBubble(`Escribí el trago que querés agregar. Podés usar los botones rápidos para autocompletar clásicos argentinos.`);
-        
         const formContainer = document.createElement('div');
         formContainer.innerHTML = `
           <div class="form-group">
@@ -471,7 +561,6 @@
             calibre: pres,
             precio: precio ? `$${precio}` : 'A definir'
           });
-          
           resetBot();
         };
 
@@ -485,14 +574,13 @@
           currentData.marca = selected;
           step = 4; renderBot();
         });
-        botInterface.append(bubble, options, createBackBtn());
+        botInterface.append(bubble, options, createBackBtn(2));
       } 
       
       else if (step === 4) {
         const bubble = createBubble(`¡Genial! Seleccioná las variedades y el calibre de ${currentData.marca} que quieras agregar:`);
         const dataMarca = db[currentData.categoria][currentData.subcategoria][currentData.marca];
         
-        // 1. Checkboxes para variedades
         const varLabel = document.createElement('div');
         varLabel.className = 'form-group';
         varLabel.innerHTML = '<label>1. Tildá las variedades:</label>';
@@ -510,7 +598,6 @@
           grid.appendChild(label);
         });
 
-        // 2. Dropdown para Calibres
         const calGroup = document.createElement('div');
         calGroup.className = 'form-group';
         calGroup.style.marginTop = '18px';
@@ -532,22 +619,19 @@
         nextBtn.onclick = () => {
           const checkboxes = grid.querySelectorAll('input:checked');
           if(checkboxes.length === 0) { alert('Seleccioná al menos una variedad.'); return; }
-          
           const calibreSeleccionado = document.getElementById('calibreSelect').value;
           
           selectedCombinations = Array.from(checkboxes).map(cb => {
             return { variedad: cb.value, calibre: calibreSeleccionado };
           });
-          
           step = 5; renderBot();
         };
 
-        botInterface.append(bubble, varLabel, grid, calGroup, nextBtn, createBackBtn());
+        botInterface.append(bubble, varLabel, grid, calGroup, nextBtn, createBackBtn(3));
       }
 
       else if (step === 5) {
         const bubble = createBubble(`Colocá los precios. Si no los sabés, dejalos en blanco y se guardan como "A definir".`);
-        
         const grid = document.createElement('div');
         grid.className = 'prices-grid';
 
@@ -583,7 +667,7 @@
           resetBot();
         };
 
-        botInterface.append(bubble, grid, saveBtn, createBackBtn());
+        botInterface.append(bubble, grid, saveBtn, createBackBtn(4));
       }
     }
 
@@ -638,21 +722,32 @@
       listSinAlcohol.innerHTML = '';
       listConAlcohol.innerHTML = '';
       listTragos.innerHTML = '';
+      listCombos.innerHTML = '';
       
       const itemsSin = itemsAgregados.filter(i => i.categoria === 'Sin alcohol');
       const itemsCon = itemsAgregados.filter(i => i.categoria === 'Con alcohol' && i.subcategoria !== 'Tragos');
       const itemsTragos = itemsAgregados.filter(i => i.subcategoria === 'Tragos');
+      const itemsCombos = itemsAgregados.filter(i => i.categoria === 'Combos');
 
       if (itemsAgregados.length === 0) {
         emptyState.style.display = 'block';
         sectionSinAlcohol.style.display = 'none';
         sectionConAlcohol.style.display = 'none';
         sectionTragos.style.display = 'none';
+        sectionCombos.style.display = 'none';
         btnTerminar.style.display = 'none';
         return;
       } else {
         emptyState.style.display = 'none';
         btnTerminar.style.display = 'block';
+      }
+
+      // Render Combos
+      if (itemsCombos.length > 0) {
+        sectionCombos.style.display = 'block';
+        itemsCombos.forEach(item => listCombos.appendChild(crearElementoLista(item, true)));
+      } else {
+        sectionCombos.style.display = 'none';
       }
 
       // Render Sin Alcohol
@@ -670,7 +765,6 @@
         itemsCon.sort((a, b) => {
           const rankA = getSegmentRank(a.marca);
           const rankB = getSegmentRank(b.marca);
-          
           if (rankA !== rankB) return rankA - rankB; 
           if (a.marca !== b.marca) return a.marca.localeCompare(b.marca); 
           return a.variedad.localeCompare(b.variedad); 
@@ -690,21 +784,29 @@
       }
     }
 
-    function crearElementoLista(item) {
+    function crearElementoLista(item, esCombo = false) {
       const div = document.createElement('div');
       div.className = 'summary-item';
       
-      const nombreLimpio = item.variedad && item.variedad !== 'Clásica' && item.variedad !== 'Regular' && item.variedad !== '0.0%' 
-        ? `${item.marca} ${item.variedad}` 
-        : item.marca;
+      let nombreLimpio = item.marca;
+      let subtituloHTML = `<span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>`;
+
+      if (!esCombo) {
+        if (item.variedad && item.variedad !== 'Clásica' && item.variedad !== 'Regular' && item.variedad !== '0.0%') {
+          nombreLimpio = `${item.marca} ${item.variedad}`;
+        }
+      } else {
+        // En los combos, usamos 'calibre' para guardar la frase promocional generada
+        subtituloHTML = `<div class="combo-desc">"${item.calibre}"</div>`;
+      }
 
       div.innerHTML = `
         <div class="summary-details">
           <strong>${nombreLimpio}</strong>
-          <span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>
+          ${subtituloHTML}
         </div>
         <div class="summary-actions">
-          <span style="font-weight:bold;">${item.precio}</span>
+          <span style="font-weight:bold; font-size:15px; color:#059669;">${item.precio}</span>
           <button class="delete-btn" onclick="borrarItem(${item.id})" title="Eliminar">🗑️</button>
         </div>
       `;
