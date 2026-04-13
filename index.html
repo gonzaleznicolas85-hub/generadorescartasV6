@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta (Combos + Frases)</title>
+  <title>Bot Preview - Carta Ideal + Drag & Drop + Edición</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,10 +47,7 @@
       gap: 6px;
     }
 
-    .ideal-btn:hover {
-      background: #dbeafe;
-      border-color: #93c5fd;
-    }
+    .ideal-btn:hover { background: #dbeafe; border-color: #93c5fd; }
 
     .chat-bubble {
       background: #f3f4f6;
@@ -84,193 +81,97 @@
     }
 
     .option-btn:hover {
-      background: #111111;
-      border-color: #111111;
-      color: #ffffff;
-      transform: translateY(-1px);
+      background: #111111; border-color: #111111; color: #ffffff; transform: translateY(-1px);
     }
 
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
-    }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 
     .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #f8fafc;
-      padding: 10px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      font-weight: bold;
+      display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 10px;
+      border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: bold;
     }
-
     .checkbox-item input { margin-top: 1px; }
 
-    .prices-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+    .prices-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
 
     .price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      padding: 10px 14px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 13px;
+      display: flex; justify-content: space-between; align-items: center; background: #f8fafc;
+      padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px;
     }
 
     .price-row input, .form-input {
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-      width: 100%;
-      box-sizing: border-box;
+      padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px;
+      outline: none; font-size: 14px; width: 100%; box-sizing: border-box;
     }
-    
     .price-row input { width: 100px; text-align: right; }
     .price-row input:focus, .form-input:focus { border-color: #111111; }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: bold; color: #374151; }
 
-    .form-group label {
-      font-size: 13px;
-      font-weight: bold;
-      color: #374151;
-    }
-
-    .quick-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .quick-chip {
-      font-size: 11px;
-      background: #e5e7eb;
-      color: #374151;
-      padding: 4px 8px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
+      font-size: 11px; background: #e5e7eb; color: #374151; padding: 4px 8px;
+      border-radius: 12px; cursor: pointer; font-weight: bold;
     }
     .quick-chip:hover { background: #d1d5db; }
 
     .action-btn {
-      background: #111111;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 20px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      font-size: 15px;
+      background: #111111; color: #fff; border: none; border-radius: 12px;
+      padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px;
     }
     .action-btn:hover { background: #374151; }
 
-    .finish-btn {
-      background: #059669; 
-      margin-top: 24px;
-    }
+    .finish-btn { background: #059669; margin-top: 24px; }
     .finish-btn:hover { background: #047857; }
 
-    .summary-container {
-      margin-top: 30px;
-      border-top: 2px dashed #e5e7eb;
-      padding-top: 20px;
-    }
+    .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
+    .category-section { margin-bottom: 24px; display: none; }
+    .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
 
-    .category-section {
-      margin-bottom: 24px;
-      display: none; 
-    }
-
-    .category-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #111827;
-      margin: 0 0 12px 0;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
+    /* Estilos de las tarjetas del resumen y Drag & Drop */
     .summary-item {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      padding: 12px 14px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      background: #ffffff; border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 10px;
+      margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between;
+      align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease;
     }
+    .summary-item.dragging { opacity: 0.4; border: 2px dashed #9ca3af; transform: scale(0.98); }
+    .summary-item.over { border-top: 3px solid #3b82f6; }
 
-    .summary-details { display: flex; flex-direction: column; }
-    .summary-actions { display: flex; align-items: center; gap: 12px; }
-
-    .delete-btn {
-      background: #fee2e2;
-      color: #991b1b;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
+    .drag-handle {
+      cursor: grab; color: #9ca3af; margin-right: 8px; font-size: 18px; user-select: none;
     }
+    .drag-handle:active { cursor: grabbing; }
+
+    .summary-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+    .summary-actions { display: flex; align-items: center; gap: 8px; }
+
+    .delete-btn, .edit-btn {
+      border: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; font-weight: bold;
+    }
+    .delete-btn { background: #fee2e2; color: #991b1b; }
     .delete-btn:hover { background: #fecaca; }
+    .edit-btn { background: #e0f2fe; color: #0369a1; }
+    .edit-btn:hover { background: #bae6fd; }
 
     .restart-btn {
-      background: transparent;
-      color: #6b7280;
-      border: none;
-      font-size: 13px;
-      text-decoration: underline;
-      cursor: pointer;
-      margin-top: 10px;
-      margin-bottom: 20px;
+      background: transparent; color: #6b7280; border: none; font-size: 13px;
+      text-decoration: underline; cursor: pointer; margin-top: 10px; margin-bottom: 20px;
     }
     
-    .combo-desc {
-      color:#6b7280; 
-      font-size:12.5px; 
-      margin-top: 4px;
-      font-style: italic;
-    }
+    .combo-desc { color:#6b7280; font-size:12.5px; margin-top: 4px; font-style: italic; }
   </style>
 </head>
 <body>
 
   <div class="bot-card">
-    
     <div class="quick-actions">
       <button class="ideal-btn" onclick="cargarCartaIdeal()">
         ✨ Cargar Carta Ideal
       </button>
     </div>
 
-    <div id="botInterface">
-      </div>
+    <div id="botInterface"></div>
 
     <div class="summary-container">
       <div id="emptyState" style="color: #9ca3af; font-size: 14px; text-align: center; padding: 20px 0;">
@@ -304,24 +205,15 @@
   </div>
 
   <script>
-    // 1. JERARQUÍA DE SEGMENTOS DE CERVEZA
+    // 1. JERARQUÍA Y ESTADO
     const segmentOrder = {
-      "1890": 1,
-      "Quilmes": 2,
-      "Brahma": 2,
-      "Budweiser": 2,
-      "Michelob Ultra": 3,
-      "Andes Origen": 3,
-      "Stella Artois": 4,
-      "Patagonia": 4,
-      "Corona": 4
+      "1890": 1, "Quilmes": 2, "Brahma": 2, "Budweiser": 2, 
+      "Michelob Ultra": 3, "Andes Origen": 3, 
+      "Stella Artois": 4, "Patagonia": 4, "Corona": 4
     };
 
-    function getSegmentRank(marca) {
-      return segmentOrder[marca] || 99; 
-    }
+    function getSegmentRank(marca) { return segmentOrder[marca] || 99; }
 
-    // 2. BASE DE DATOS
     const db = {
       "Sin alcohol": {
         "Gaseosas": {
@@ -360,27 +252,51 @@
       }
     };
 
-    // 3. ESTADO
     let currentData = {};
     let selectedCombinations = [];
     let step = 1;
     let itemsAgregados = [];
     let idCounter = 0;
+    
+    // Bandera para deshabilitar el autocompletado si el usuario ordenó a mano
+    let ordenManualActivado = false; 
 
+    // VARIABLES DOM
     const botInterface = document.getElementById('botInterface');
     const emptyState = document.getElementById('emptyState');
-    const sectionSinAlcohol = document.getElementById('sectionSinAlcohol');
-    const sectionConAlcohol = document.getElementById('sectionConAlcohol');
-    const sectionTragos = document.getElementById('sectionTragos');
-    const sectionCombos = document.getElementById('sectionCombos');
-    const listSinAlcohol = document.getElementById('listSinAlcohol');
-    const listConAlcohol = document.getElementById('listConAlcohol');
-    const listTragos = document.getElementById('listTragos');
-    const listCombos = document.getElementById('listCombos');
+    const sections = {
+      "Sin alcohol": { container: document.getElementById('sectionSinAlcohol'), list: document.getElementById('listSinAlcohol') },
+      "Con alcohol": { container: document.getElementById('sectionConAlcohol'), list: document.getElementById('listConAlcohol') },
+      "Tragos": { container: document.getElementById('sectionTragos'), list: document.getElementById('listTragos') },
+      "Combos": { container: document.getElementById('sectionCombos'), list: document.getElementById('listCombos') }
+    };
     const btnTerminar = document.getElementById('btnTerminar');
 
     // ==========================================
-    // FUNCIÓN: CARGAR CARTA IDEAL
+    // ORDENAMIENTO GLOBAL
+    // ==========================================
+    function ordenarItemsAgregados() {
+      // Si el usuario ya arrastró elementos a mano, respetamos su orden y NO volvemos a ordenar
+      if (ordenManualActivado) return;
+
+      itemsAgregados.sort((a, b) => {
+        const catOrder = {"Combos": 1, "Sin alcohol": 2, "Con alcohol": 3};
+        if (catOrder[a.categoria] !== catOrder[b.categoria]) return catOrder[a.categoria] - catOrder[b.categoria];
+
+        // Orden de Cervezas por Segmento
+        if (a.categoria === 'Con alcohol' && a.subcategoria !== 'Tragos' && b.categoria === 'Con alcohol' && b.subcategoria !== 'Tragos') {
+          const rankA = getSegmentRank(a.marca);
+          const rankB = getSegmentRank(b.marca);
+          if (rankA !== rankB) return rankA - rankB;
+          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca);
+          return a.variedad.localeCompare(b.variedad);
+        }
+        return 0; 
+      });
+    }
+
+    // ==========================================
+    // CARTA IDEAL
     // ==========================================
     function cargarCartaIdeal() {
       const idealItems = [
@@ -394,23 +310,20 @@
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "IPA", calibre: "Lata 473ml", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "Roja", calibre: "Lata 473ml", precio: "A definir" },
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" },
-        // Agregamos un combo de prueba a la carta ideal
         { categoria: "Combos", subcategoria: "Cervezas", marca: "Combo Stella Artois + Picada", variedad: "", calibre: "El combo perfecto: Picada para 2 acompañada de una Stella Artois.", precio: "A definir" }
       ];
 
-      idealItems.forEach(item => {
-        item.id = idCounter++;
-        itemsAgregados.push(item);
-      });
+      idealItems.forEach(item => { item.id = idCounter++; itemsAgregados.push(item); });
       
+      ordenarItemsAgregados();
       actualizarListas();
-      currentData = {};
-      selectedCombinations = [];
-      step = 1;
-      renderBot();
+      
+      currentData = {}; selectedCombinations = []; step = 1; renderBot();
     }
 
-    // 4. RENDERIZADO DEL BOT
+    // ==========================================
+    // FLUJO DEL BOT (Igual que antes)
+    // ==========================================
     function renderBot() {
       botInterface.innerHTML = ''; 
 
@@ -418,25 +331,16 @@
         const bubble = createBubble('¡Hola! ¿Qué querés sumar a la carta?');
         const options = createOptions(['Sin alcohol', 'Con alcohol', 'Combos'], (selected) => {
           currentData.categoria = selected;
-          if (selected === 'Combos') {
-            step = 'combo_1';
-          } else {
-            step = 2; 
-          }
+          if (selected === 'Combos') step = 'combo_1'; else step = 2; 
           renderBot();
         });
         botInterface.append(bubble, options);
       } 
       
-      // ==========================================
-      // FLUJO DE COMBOS
-      // ==========================================
       else if (step === 'combo_1') {
-        const bubble = createBubble('¡Armemos un combo! ¿Qué tipo de bebida querés incluir?');
+        const bubble = createBubble('¡Armemos un combo! ¿Qué bebida querés incluir?');
         const options = createOptions(['Gaseosas', 'Cervezas'], (selected) => {
-          currentData.comboTipoBebida = selected;
-          step = 'combo_2';
-          renderBot();
+          currentData.comboTipoBebida = selected; step = 'combo_2'; renderBot();
         });
         botInterface.append(bubble, options, createBackBtn(1));
       }
@@ -444,12 +348,8 @@
       else if (step === 'combo_2') {
         const bubble = createBubble(`Elegí la marca de la bebida para el combo:`);
         const marcasPath = currentData.comboTipoBebida === 'Gaseosas' ? db['Sin alcohol']['Gaseosas'] : db['Con alcohol']['Cervezas'];
-        const opcionesMarcas = Object.keys(marcasPath);
-        
-        const options = createOptions(opcionesMarcas, (selected) => {
-          currentData.marca = selected;
-          step = 'combo_3';
-          renderBot();
+        const options = createOptions(Object.keys(marcasPath), (selected) => {
+          currentData.marca = selected; step = 'combo_3'; renderBot();
         });
         botInterface.append(bubble, options, createBackBtn('combo_1'));
       }
@@ -463,253 +363,227 @@
             <input type="text" id="comboComida" class="form-input" placeholder="Ej: Milanesa con papas">
           </div>
           <div class="form-group">
-            <label>Precio del Combo (Dejar vacío si es a definir)</label>
-            <input type="number" id="comboPrecio" class="form-input" placeholder="$">
+            <label>Precio del Combo</label>
+            <input type="text" id="comboPrecio" class="form-input" placeholder="$">
           </div>
         `;
 
         const saveBtn = document.createElement('button');
-        saveBtn.className = 'action-btn';
-        saveBtn.textContent = 'Generar y Guardar Combo';
+        saveBtn.className = 'action-btn'; saveBtn.textContent = 'Generar y Guardar Combo';
         saveBtn.onclick = () => {
           const comida = document.getElementById('comboComida').value.trim();
           const precio = document.getElementById('comboPrecio').value;
+          if (!comida) return alert("Por favor, ingresá la comida.");
 
-          if (!comida) { alert("Por favor, ingresá la comida."); return; }
-
-          // Generador de frases aleatorias de marketing
           const frases = [
             `Promo imperdible: disfrutá una ${currentData.marca} bien fría más ${comida}.`,
             `El combo perfecto: ${comida} acompañada de una ${currentData.marca} refrescante.`,
-            `Date un gusto con esta promo especial: ${comida} + ${currentData.marca}.`,
-            `Para compartir (o no): Una ${currentData.marca} helada y ${comida}.`,
-            `Especial de la casa: ${comida} sale con ${currentData.marca}.`
+            `Date un gusto con esta promo especial: ${comida} + ${currentData.marca}.`
           ];
           const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
 
           itemsAgregados.push({
-            id: idCounter++,
-            categoria: 'Combos',
-            subcategoria: currentData.comboTipoBebida,
-            marca: `Combo ${currentData.marca} + ${comida}`,
-            variedad: '',
-            calibre: fraseAleatoria, // Guardamos la frase generada acá para mostrarla
-            precio: precio ? `$${precio}` : 'A definir'
+            id: idCounter++, categoria: 'Combos', subcategoria: currentData.comboTipoBebida,
+            marca: `Combo ${currentData.marca} + ${comida}`, variedad: '', calibre: fraseAleatoria,
+            precio: precio ? (precio.startsWith('$') ? precio : `$${precio}`) : 'A definir'
           });
           
           resetBot();
         };
-
         botInterface.append(bubble, formContainer, saveBtn, createBackBtn('combo_2'));
       }
 
-      // ==========================================
-      // FLUJO NORMAL (Bebidas)
-      // ==========================================
       else if (step === 2) {
         const bubble = createBubble(`Elegiste ${currentData.categoria}. ¿Qué subcategoría querés sumar?`);
         const options = createOptions(Object.keys(db[currentData.categoria]), (selected) => {
           currentData.subcategoria = selected;
-          if (selected === 'Tragos') step = 'tragos_form';
-          else step = 3; 
+          if (selected === 'Tragos') step = 'tragos_form'; else step = 3; 
           renderBot();
         });
         botInterface.append(bubble, options, createBackBtn(1));
       } 
       
       else if (step === 'tragos_form') {
-        const bubble = createBubble(`Escribí el trago que querés agregar. Podés usar los botones rápidos para autocompletar clásicos argentinos.`);
+        const bubble = createBubble(`Escribí el trago que querés agregar.`);
         const formContainer = document.createElement('div');
         formContainer.innerHTML = `
           <div class="form-group">
             <label>Nombre del Trago</label>
             <input type="text" id="tragoNombre" class="form-input" placeholder="Ej: Fernet con Cola">
-            <div class="quick-chips">
-              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Fernet con Cola'">Fernet c/ Cola</span>
-              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Campari con Naranja'">Campari Naranja</span>
-              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Gin Tonic'">Gin Tonic</span>
-              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Gancia con Limón'">Gancia c/ Limón</span>
-              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Destornillador'">Destornillador</span>
-            </div>
           </div>
-          <div class="form-group">
-            <label>Presentación</label>
-            <input type="text" id="tragoPres" class="form-input" placeholder="Ej: Vaso Clásico, Jarra 1L, Copa">
-          </div>
-          <div class="form-group">
-            <label>Precio (Dejar en blanco si es A definir)</label>
-            <input type="number" id="tragoPrecio" class="form-input" placeholder="$">
-          </div>
+          <div class="form-group"><label>Presentación</label><input type="text" id="tragoPres" class="form-input" placeholder="Ej: Vaso Clásico"></div>
+          <div class="form-group"><label>Precio</label><input type="text" id="tragoPrecio" class="form-input" placeholder="$"></div>
         `;
 
         const saveBtn = document.createElement('button');
-        saveBtn.className = 'action-btn';
-        saveBtn.textContent = 'Guardar Trago';
+        saveBtn.className = 'action-btn'; saveBtn.textContent = 'Guardar Trago';
         saveBtn.onclick = () => {
           const nombre = document.getElementById('tragoNombre').value.trim();
           const pres = document.getElementById('tragoPres').value.trim() || 'Vaso';
           const precio = document.getElementById('tragoPrecio').value;
-
-          if (!nombre) { alert("Por favor, ingresá el nombre del trago."); return; }
+          if (!nombre) return alert("Ingresá el nombre.");
 
           itemsAgregados.push({
-            id: idCounter++,
-            categoria: currentData.categoria,
-            subcategoria: currentData.subcategoria,
-            marca: nombre,
-            variedad: '',
-            calibre: pres,
-            precio: precio ? `$${precio}` : 'A definir'
+            id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria,
+            marca: nombre, variedad: '', calibre: pres, precio: precio ? `$${precio}` : 'A definir'
           });
           resetBot();
         };
-
         botInterface.append(bubble, formContainer, saveBtn, createBackBtn(2));
       }
 
       else if (step === 3) {
         const bubble = createBubble(`¿De qué marca o línea querés agregar?`);
-        const marcas = Object.keys(db[currentData.categoria][currentData.subcategoria]);
-        const options = createOptions(marcas, (selected) => {
-          currentData.marca = selected;
-          step = 4; renderBot();
+        const options = createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (selected) => {
+          currentData.marca = selected; step = 4; renderBot();
         });
         botInterface.append(bubble, options, createBackBtn(2));
       } 
       
       else if (step === 4) {
-        const bubble = createBubble(`¡Genial! Seleccioná las variedades y el calibre de ${currentData.marca} que quieras agregar:`);
+        const bubble = createBubble(`Seleccioná las variedades y el calibre de ${currentData.marca}:`);
         const dataMarca = db[currentData.categoria][currentData.subcategoria][currentData.marca];
         
-        const varLabel = document.createElement('div');
-        varLabel.className = 'form-group';
-        varLabel.innerHTML = '<label>1. Tildá las variedades:</label>';
-        
-        const grid = document.createElement('div');
-        grid.className = 'checkbox-grid';
-
+        const grid = document.createElement('div'); grid.className = 'checkbox-grid';
         dataMarca.var.forEach(variedad => {
-          const label = document.createElement('label');
-          label.className = 'checkbox-item';
-          label.innerHTML = `
-            <input type="checkbox" value="${variedad}">
-            <span>${variedad}</span>
-          `;
-          grid.appendChild(label);
+          grid.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${variedad}"><span>${variedad}</span></label>`;
         });
 
-        const calGroup = document.createElement('div');
-        calGroup.className = 'form-group';
-        calGroup.style.marginTop = '18px';
-        calGroup.innerHTML = '<label>2. Elegí la presentación (calibre):</label>';
-        
-        const calSelect = document.createElement('select');
-        calSelect.className = 'form-input';
-        calSelect.id = 'calibreSelect';
-        dataMarca.cal.forEach(calibre => {
-          calSelect.innerHTML += `<option value="${calibre}">${calibre}</option>`;
-        });
-        calGroup.appendChild(calSelect);
+        const calSelect = document.createElement('select'); calSelect.className = 'form-input'; calSelect.id = 'calibreSelect';
+        dataMarca.cal.forEach(calibre => calSelect.innerHTML += `<option value="${calibre}">${calibre}</option>`);
 
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'action-btn';
-        nextBtn.style.marginTop = '20px';
-        nextBtn.textContent = 'Continuar';
-        
+        const nextBtn = document.createElement('button'); nextBtn.className = 'action-btn'; nextBtn.textContent = 'Continuar';
         nextBtn.onclick = () => {
           const checkboxes = grid.querySelectorAll('input:checked');
-          if(checkboxes.length === 0) { alert('Seleccioná al menos una variedad.'); return; }
-          const calibreSeleccionado = document.getElementById('calibreSelect').value;
-          
-          selectedCombinations = Array.from(checkboxes).map(cb => {
-            return { variedad: cb.value, calibre: calibreSeleccionado };
-          });
+          if(checkboxes.length === 0) return alert('Seleccioná una variedad.');
+          selectedCombinations = Array.from(checkboxes).map(cb => ({ variedad: cb.value, calibre: calSelect.value }));
           step = 5; renderBot();
         };
 
-        botInterface.append(bubble, varLabel, grid, calGroup, nextBtn, createBackBtn(3));
+        botInterface.append(bubble, grid, calSelect, nextBtn, createBackBtn(3));
       }
 
       else if (step === 5) {
-        const bubble = createBubble(`Colocá los precios. Si no los sabés, dejalos en blanco y se guardan como "A definir".`);
-        const grid = document.createElement('div');
-        grid.className = 'prices-grid';
+        const bubble = createBubble(`Colocá los precios.`);
+        const grid = document.createElement('div'); grid.className = 'prices-grid';
 
         selectedCombinations.forEach((item, index) => {
-          const row = document.createElement('div');
-          row.className = 'price-row';
-          row.innerHTML = `
-            <div>
-              <strong>${currentData.marca} ${item.variedad !== 'Clásica' && item.variedad !== 'Regular' ? item.variedad : ''}</strong><br>
-              <span style="color:#6b7280">${item.calibre}</span>
+          grid.innerHTML += `
+            <div class="price-row">
+              <div><strong>${currentData.marca} ${item.variedad}</strong><br><span style="color:#6b7280">${item.calibre}</span></div>
+              <input type="text" id="price_${index}" placeholder="$">
             </div>
-            <input type="number" id="price_${index}" placeholder="$">
           `;
-          grid.appendChild(row);
         });
 
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'action-btn';
-        saveBtn.textContent = 'Guardar Bebidas';
+        const saveBtn = document.createElement('button'); saveBtn.className = 'action-btn'; saveBtn.textContent = 'Guardar Bebidas';
         saveBtn.onclick = () => {
           selectedCombinations.forEach((item, index) => {
             const priceVal = document.getElementById(`price_${index}`).value;
             itemsAgregados.push({
-              id: idCounter++,
-              categoria: currentData.categoria,
-              subcategoria: currentData.subcategoria,
-              marca: currentData.marca,
-              variedad: item.variedad,
-              calibre: item.calibre,
-              precio: priceVal ? `$${priceVal}` : 'A definir'
+              id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria,
+              marca: currentData.marca, variedad: item.variedad, calibre: item.calibre,
+              precio: priceVal ? (priceVal.startsWith('$') ? priceVal : `$${priceVal}`) : 'A definir'
             });
           });
           resetBot();
         };
-
         botInterface.append(bubble, grid, saveBtn, createBackBtn(4));
       }
     }
 
-    // 5. FUNCIONES ÚTILES
-    function createBubble(text) {
-      const div = document.createElement('div');
-      div.className = 'chat-bubble';
-      div.textContent = text;
-      return div;
+    function createBubble(text) { const div = document.createElement('div'); div.className = 'chat-bubble'; div.textContent = text; return div; }
+    function createOptions(arr, cb) { 
+      const div = document.createElement('div'); div.className = 'options-container';
+      arr.forEach(opt => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = opt; btn.onclick = () => cb(opt); div.appendChild(btn); });
+      return div; 
     }
-
-    function createOptions(arr, onClickCallback) {
-      const div = document.createElement('div');
-      div.className = 'options-container';
-      arr.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = opt;
-        btn.onclick = () => onClickCallback(opt);
-        div.appendChild(btn);
-      });
-      return div;
-    }
-
-    function createBackBtn(forceStep = null) {
-      const btn = document.createElement('button');
-      btn.className = 'restart-btn';
-      btn.textContent = '← Volver atrás';
-      btn.onclick = () => {
-        if (forceStep) { step = forceStep; }
-        else { step--; if (step < 1) step = 1; }
-        renderBot();
-      };
-      return btn;
+    function createBackBtn(forceStep) {
+      const btn = document.createElement('button'); btn.className = 'restart-btn'; btn.textContent = '← Volver atrás';
+      btn.onclick = () => { step = forceStep || Math.max(1, step - 1); renderBot(); }; return btn;
     }
 
     function resetBot() {
-      currentData = {};
-      selectedCombinations = [];
-      step = 1;
+      currentData = {}; selectedCombinations = []; step = 1; 
+      ordenarItemsAgregados(); // Ordenamos solo cuando agregamos ítems nuevos (y si no se rompió el orden manual)
+      actualizarListas(); renderBot();
+    }
+
+    // ==========================================
+    // DRAG AND DROP LÓGICA
+    // ==========================================
+    let draggedItemId = null;
+
+    function handleDragStart(e) {
+      draggedItemId = this.dataset.id;
+      e.dataTransfer.effectAllowed = 'move';
+      this.classList.add('dragging');
+    }
+    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+    function handleDragEnter(e) { this.classList.add('over'); }
+    function handleDragLeave(e) { this.classList.remove('over'); }
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.summary-item').forEach(item => item.classList.remove('over'));
+    }
+    function handleDrop(e) {
+      e.stopPropagation();
+      const targetId = this.dataset.id;
+
+      if (draggedItemId !== targetId) {
+        const fromIndex = itemsAgregados.findIndex(i => i.id == draggedItemId);
+        const toIndex = itemsAgregados.findIndex(i => i.id == targetId);
+
+        // Permitimos arrastrar solo dentro de la misma categoría visual
+        if (itemsAgregados[fromIndex].categoria === itemsAgregados[toIndex].categoria) {
+          const [movedItem] = itemsAgregados.splice(fromIndex, 1);
+          itemsAgregados.splice(toIndex, 0, movedItem);
+          
+          ordenManualActivado = true; // Desactivamos el auto-sort futuro
+          actualizarListas();
+        }
+      }
+      return false;
+    }
+
+    // ==========================================
+    // EDICIÓN EN LÍNEA
+    // ==========================================
+    function editarItem(id) {
+      const div = document.querySelector(`.summary-item[data-id="${id}"]`);
+      if(!div) return;
+      div.draggable = false; // Desactivar drag temporalmente
+      
+      const item = itemsAgregados.find(i => i.id === id);
+      const isCombo = item.categoria === 'Combos';
+      let nombreLimpio = item.marca;
+      if (!isCombo && item.variedad && item.variedad !== 'Clásica' && item.variedad !== 'Regular' && item.variedad !== '0.0%') {
+          nombreLimpio = `${item.marca} ${item.variedad}`;
+      }
+
+      div.innerHTML = `
+        <div class="summary-details">
+          <input type="text" id="edit_name_${id}" class="form-input" style="padding: 6px; margin-bottom: 4px; font-weight: bold;" value="${nombreLimpio}">
+          <input type="text" id="edit_cal_${id}" class="form-input" style="padding: 6px; font-size: 12px; color: #6b7280;" value="${item.calibre}">
+        </div>
+        <div class="summary-actions">
+          <input type="text" id="edit_precio_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right;" value="${item.precio}">
+          <button class="action-btn" style="padding: 8px 12px; width: auto; font-size: 13px;" onclick="guardarEdicion(${id})" title="Guardar">💾</button>
+          <button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()" title="Cancelar">❌</button>
+        </div>
+      `;
+    }
+
+    function guardarEdicion(id) {
+      const index = itemsAgregados.findIndex(i => i.id === id);
+      if (index > -1) {
+        itemsAgregados[index].marca = document.getElementById(`edit_name_${id}`).value;
+        itemsAgregados[index].variedad = ''; // Vaciamos variedad para que use el texto custom
+        itemsAgregados[index].calibre = document.getElementById(`edit_cal_${id}`).value;
+        const p = document.getElementById(`edit_precio_${id}`).value;
+        itemsAgregados[index].precio = p ? (p.startsWith('$') ? p : `$${p}`) : 'A definir';
+      }
       actualizarListas();
-      renderBot();
     }
 
     function borrarItem(id) {
@@ -717,76 +591,40 @@
       actualizarListas();
     }
 
-    // 6. ACTUALIZAR RESUMEN CON ORDENAMIENTO
+    // ==========================================
+    // RENDERIZADO DEL RESUMEN
+    // ==========================================
     function actualizarListas() {
-      listSinAlcohol.innerHTML = '';
-      listConAlcohol.innerHTML = '';
-      listTragos.innerHTML = '';
-      listCombos.innerHTML = '';
-      
-      const itemsSin = itemsAgregados.filter(i => i.categoria === 'Sin alcohol');
-      const itemsCon = itemsAgregados.filter(i => i.categoria === 'Con alcohol' && i.subcategoria !== 'Tragos');
-      const itemsTragos = itemsAgregados.filter(i => i.subcategoria === 'Tragos');
-      const itemsCombos = itemsAgregados.filter(i => i.categoria === 'Combos');
+      Object.values(sections).forEach(s => { s.list.innerHTML = ''; s.container.style.display = 'none'; });
 
       if (itemsAgregados.length === 0) {
-        emptyState.style.display = 'block';
-        sectionSinAlcohol.style.display = 'none';
-        sectionConAlcohol.style.display = 'none';
-        sectionTragos.style.display = 'none';
-        sectionCombos.style.display = 'none';
-        btnTerminar.style.display = 'none';
-        return;
+        emptyState.style.display = 'block'; btnTerminar.style.display = 'none'; return;
       } else {
-        emptyState.style.display = 'none';
-        btnTerminar.style.display = 'block';
+        emptyState.style.display = 'none'; btnTerminar.style.display = 'block';
       }
 
-      // Render Combos
-      if (itemsCombos.length > 0) {
-        sectionCombos.style.display = 'block';
-        itemsCombos.forEach(item => listCombos.appendChild(crearElementoLista(item, true)));
-      } else {
-        sectionCombos.style.display = 'none';
-      }
+      itemsAgregados.forEach(item => {
+        let secKey = item.categoria;
+        if (item.subcategoria === 'Tragos') secKey = 'Tragos';
 
-      // Render Sin Alcohol
-      if (itemsSin.length > 0) {
-        sectionSinAlcohol.style.display = 'block';
-        itemsSin.forEach(item => listSinAlcohol.appendChild(crearElementoLista(item)));
-      } else {
-        sectionSinAlcohol.style.display = 'none';
-      }
-
-      // Render Con Alcohol (Cervezas) ordenadas por Segmento
-      if (itemsCon.length > 0) {
-        sectionConAlcohol.style.display = 'block';
-        
-        itemsCon.sort((a, b) => {
-          const rankA = getSegmentRank(a.marca);
-          const rankB = getSegmentRank(b.marca);
-          if (rankA !== rankB) return rankA - rankB; 
-          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca); 
-          return a.variedad.localeCompare(b.variedad); 
-        });
-
-        itemsCon.forEach(item => listConAlcohol.appendChild(crearElementoLista(item)));
-      } else {
-        sectionConAlcohol.style.display = 'none';
-      }
-
-      // Render Tragos
-      if (itemsTragos.length > 0) {
-        sectionTragos.style.display = 'block';
-        itemsTragos.forEach(item => listTragos.appendChild(crearElementoLista(item)));
-      } else {
-        sectionTragos.style.display = 'none';
-      }
+        sections[secKey].container.style.display = 'block';
+        sections[secKey].list.appendChild(crearElementoLista(item, item.categoria === 'Combos'));
+      });
     }
 
-    function crearElementoLista(item, esCombo = false) {
+    function crearElementoLista(item, esCombo) {
       const div = document.createElement('div');
       div.className = 'summary-item';
+      div.dataset.id = item.id;
+      div.draggable = true;
+
+      // Eventos Drag & Drop
+      div.addEventListener('dragstart', handleDragStart);
+      div.addEventListener('dragover', handleDragOver);
+      div.addEventListener('dragenter', handleDragEnter);
+      div.addEventListener('dragleave', handleDragLeave);
+      div.addEventListener('drop', handleDrop);
+      div.addEventListener('dragend', handleDragEnd);
       
       let nombreLimpio = item.marca;
       let subtituloHTML = `<span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>`;
@@ -796,17 +634,17 @@
           nombreLimpio = `${item.marca} ${item.variedad}`;
         }
       } else {
-        // En los combos, usamos 'calibre' para guardar la frase promocional generada
         subtituloHTML = `<div class="combo-desc">"${item.calibre}"</div>`;
       }
 
       div.innerHTML = `
         <div class="summary-details">
-          <strong>${nombreLimpio}</strong>
+          <strong><span class="drag-handle" title="Arrastrar para mover">⠿</span>${nombreLimpio}</strong>
           ${subtituloHTML}
         </div>
         <div class="summary-actions">
           <span style="font-weight:bold; font-size:15px; color:#059669;">${item.precio}</span>
+          <button class="edit-btn" onclick="editarItem(${item.id})" title="Editar texto o precio">✏️</button>
           <button class="delete-btn" onclick="borrarItem(${item.id})" title="Eliminar">🗑️</button>
         </div>
       `;
