@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Automatización de Gaps de Precio</title>
+  <title>Bot Preview - Sistema de Menú Digital Completo</title>
   <style>
-    /* ... (Mantenemos los estilos anteriores de la estructura, drag&drop y qr) ... */
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .quick-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
     .ideal-btn { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .ideal-btn:hover { background: #dbeafe; border-color: #93c5fd; }
     .chat-bubble { background: #f3f4f6; color: #111827; padding: 14px 18px; border-radius: 16px 16px 16px 0; font-size: 15px; line-height: 1.5; margin-bottom: 16px; display: inline-block; max-width: 90%; }
     .options-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
     .option-btn { background: #ffffff; border: 1px solid #d1d5db; border-radius: 20px; padding: 10px 18px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.2s ease; }
@@ -23,8 +23,13 @@
     .price-row input { width: 85px; text-align: right; }
     .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
     .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: bold; color: #374151; }
     .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+    .action-btn:hover { background: #374151; }
+    .action-btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .finish-btn { background: #059669; margin-top: 24px; }
+    .finish-btn:hover { background: #047857; }
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
@@ -64,7 +69,7 @@
       </div>
 
       <div id="botInterface">
-        <div class="chat-bubble">⏳ Sincronizando catálogo...</div>
+        <div class="chat-bubble">⏳ Sincronizando catálogo con tu Google Sheet...</div>
       </div>
 
       <div class="summary-container">
@@ -73,30 +78,34 @@
         <div id="sectionSinAlcohol" class="category-section"><h4 class="category-title">🥤 Sin Alcohol</h4><div id="listSinAlcohol"></div></div>
         <div id="sectionConAlcohol" class="category-section"><h4 class="category-title">🍺 Cervezas</h4><div id="listConAlcohol"></div></div>
         <div id="sectionTragos" class="category-section"><h4 class="category-title">🍹 Tragos</h4><div id="listTragos"></div></div>
-        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Finalizar y Crear QR</button>
+        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Generar Menú y Crear QR</button>
       </div>
     </div>
 
     <div id="successScreen" class="success-screen">
       <h2>🎉 ¡Menú Listo!</h2>
-      <p>Escaneá o descargá el QR para las mesas.</p>
-      <div class="qr-box"><img id="qrImage" src="" alt="QR"></div><br><br>
+      <p>Escaneá el QR para ver la carta o descargalo para tus mesas.</p>
+      <div class="qr-box"><img id="qrImage" src="" alt="QR Generando..."></div><br><br>
       <button class="action-btn" onclick="descargarQR()" style="background: #2563eb;">⬇️ Descargar QR</button>
-      <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Reiniciar</button>
+      <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Armar otra carta</button>
     </div>
   </div>
 
   <div id="toastSugerencia">
     <button class="close-toast" onclick="cerrarToast()">✖</button>
-    <div class="toast-title">💡 Arquitectura de Precios</div>
+    <div class="toast-title">💡 Estrategia de Precios</div>
     <div id="toastContent"></div>
     <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Aplicar sugerencias a esta carga</button>
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEjemploReemplazarPorTuURL/exec';
+    // ====================================================================
+    // URL DE TU APPS SCRIPT
+    // ====================================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo7iHruygBKneRj2A4mnWv5usE2dFZb2BPTfr5smozMVTzr5Sf-Nj8Phwr9qweoR59/exec';
+    
     let db = {}; 
-    let sugerenciasActuales = null; // Guardamos los cálculos para el botón de aplicar
+    let sugerenciasActuales = null; 
     
     // JERARQUÍA
     const segmentOrder = { "1890": 1, "Quilmes": 2, "Brahma": 2, "Budweiser": 2, "Michelob Ultra": 3, "Andes Origen": 3, "Stella Artois": 4, "Patagonia": 4, "Corona": 4 };
@@ -109,7 +118,7 @@
         document.getElementById('btnIdeal').style.display = 'flex';
         renderBot();
       } catch (e) {
-        document.getElementById('botInterface').innerHTML = `<div class="chat-bubble" style="color:red">Error de conexión con Sheets.</div>`;
+        document.getElementById('botInterface').innerHTML = `<div class="chat-bubble" style="color:red">Error de conexión con Sheets. Revisá los permisos del script.</div>`;
       }
     }
 
@@ -123,7 +132,6 @@
       let baseCore = 0;
       let rank = getSegmentRank(marca);
 
-      // Hallar base Core (Reglas: CP = +10%, HE = +35% del Core)
       if (rank === 2) baseCore = precio;
       else if (rank === 3) baseCore = precio / 1.10;
       else if (rank === 4) baseCore = precio / 1.35;
@@ -138,9 +146,9 @@
       };
 
       let html = `Basado en <strong>$${precio}</strong> de ${marca}:<ul class="toast-list">`;
-      if(rank!==2) html += `<li>Core (Quilmes): <strong>$${sugerenciasActuales.core}</strong></li>`;
-      if(rank!==3) html += `<li>Core Plus (Andes): <strong>$${sugerenciasActuales.corePlus}</strong></li>`;
-      if(rank!==4) html += `<li>High End (Stella): <strong>$${sugerenciasActuales.highEnd}</strong></li>`;
+      if(rank!==2) html += `<li>Core (Ej: Quilmes): <strong>$${sugerenciasActuales.core}</strong></li>`;
+      if(rank!==3) html += `<li>Core Plus (Ej: Andes): <strong>$${sugerenciasActuales.corePlus}</strong></li>`;
+      if(rank!==4) html += `<li>High End (Ej: Stella): <strong>$${sugerenciasActuales.highEnd}</strong></li>`;
       html += `<li>Tragos: <strong>$${sugerenciasActuales.trago}</strong></li></ul>`;
 
       document.getElementById('toastContent').innerHTML = html;
@@ -149,13 +157,10 @@
 
     function aplicarSugerenciasAutomatica() {
       if (!sugerenciasActuales) return;
-
-      // Buscamos todos los inputs de precio visibles en pantalla (Paso 5)
       selectedCombinations.forEach((item, i) => {
         let inputNormal = document.getElementById(`price_${i}`);
         if (!inputNormal) return;
 
-        // Averiguamos qué marca es para saber qué precio sugerido ponerle
         let m = currentData.marca;
         let r = getSegmentRank(m);
         let val = 0;
@@ -167,64 +172,98 @@
 
         if (val > 0) inputNormal.value = val;
       });
-
       cerrarToast();
     }
 
     function cerrarToast() { document.getElementById('toastSugerencia').classList.remove('show'); sugerenciasActuales = null; }
 
     // ==========================================
-    // LOGICA APP (Simplificada para el ejemplo)
+    // LOGICA APP FRONTEND
     // ==========================================
     let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0;
+    const botInterface = document.getElementById('botInterface');
+    const sections = {
+      "Sin alcohol": { container: document.getElementById('sectionSinAlcohol'), list: document.getElementById('listSinAlcohol') },
+      "Con alcohol": { container: document.getElementById('sectionConAlcohol'), list: document.getElementById('listConAlcohol') },
+      "Tragos": { container: document.getElementById('sectionTragos'), list: document.getElementById('listTragos') },
+      "Combos": { container: document.getElementById('sectionCombos'), list: document.getElementById('listCombos') }
+    };
 
     function renderBot() {
       botInterface.innerHTML = '';
+      if (!db["Sin alcohol"]) return; 
+
       if (step === 1) {
-        botInterface.append(createBubble('¿Qué agregamos?'), createOptions(['Sin alcohol', 'Con alcohol', 'Combos'], (s) => { currentData.categoria = s; step = (s==='Combos'?'combo_1':2); renderBot(); }));
+        botInterface.append(createBubble('¿Qué agregamos a la carta?'), createOptions(['Sin alcohol', 'Con alcohol', 'Combos'], (s) => { currentData.categoria = s; step = (s==='Combos'?'combo_1':2); renderBot(); }));
+      }
+      else if (step === 'combo_1') {
+        botInterface.append(createBubble('¿Qué bebida querés incluir en el combo?'), createOptions(['Gaseosas', 'Cervezas'], (s) => { currentData.comboTipoBebida = s; step = 'combo_2'; renderBot(); }), createBackBtn(1));
+      }
+      else if (step === 'combo_2') {
+        const marcasPath = currentData.comboTipoBebida === 'Gaseosas' ? db['Sin alcohol']['Gaseosas'] : db['Con alcohol']['Cervezas'];
+        botInterface.append(createBubble(`Elegí la marca:`), createOptions(Object.keys(marcasPath), (s) => { currentData.marca = s; step = 'combo_3'; renderBot(); }), createBackBtn('combo_1'));
+      }
+      else if (step === 'combo_3') {
+        let form = document.createElement('div');
+        form.innerHTML = `<div class="form-group"><label>Comida</label><input type="text" id="comboComida" class="form-input" placeholder="Ej: Hamburguesa"></div><div class="hh-toggle-container"><input type="checkbox" id="hhToggle" onchange="document.getElementById('hhInputBox').style.display = this.checked ? 'block' : 'none'"><label for="hhToggle" style="margin:0; cursor:pointer;">Precio Happy Hour</label></div><div class="price-inputs" style="justify-content:flex-start;"><input type="text" id="comboPrecio" class="form-input" placeholder="Normal $"><div id="hhInputBox" style="display:none;"><input type="text" id="comboPrecioHH" class="form-input" placeholder="HH $" style="border-color:#f97316;"></div></div>`;
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '16px'; btn.textContent = 'Guardar Combo';
+        btn.onclick = () => {
+          let comida = document.getElementById('comboComida').value;
+          if (!comida) return alert("Falta comida.");
+          itemsAgregados.push({ id: idCounter++, categoria: 'Combos', subcategoria: currentData.comboTipoBebida, marca: `Combo ${currentData.marca} + ${comida}`, variedad: '', calibre: `Promo ${currentData.marca} y ${comida}`, precio: formatPrecio(document.getElementById('comboPrecio').value), precioHH: document.getElementById('hhToggle').checked ? formatPrecio(document.getElementById('comboPrecioHH').value) : null });
+          resetBot();
+        };
+        botInterface.append(createBubble(`Comida y Precio:`), form, btn, createBackBtn('combo_2'));
       }
       else if (step === 2) {
-        botInterface.append(createBubble('¿Subcategoría?'), createOptions(Object.keys(db[currentData.categoria]), (s) => { currentData.subcategoria = s; step = (s==='Tragos'?'tragos_form':3); renderBot(); }));
+        botInterface.append(createBubble('¿Subcategoría?'), createOptions(Object.keys(db[currentData.categoria]), (s) => { currentData.subcategoria = s; step = (s==='Tragos'?'tragos_form':3); renderBot(); }), createBackBtn(1));
       }
       else if (step === 'tragos_form') {
         let form = document.createElement('div');
         form.innerHTML = `<div class="form-group"><label>Nombre</label><input type="text" id="tNom" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="tPrecio" class="form-input" onblur="calcularSugerencia('Trago','Vaso',this.value,'Tragos')"></div>`;
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Trago';
-        btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: '$'+document.getElementById('tPrecio').value}); resetBot(); };
-        botInterface.append(createBubble('Cargá el trago:'), form, btn);
+        btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: formatPrecio(document.getElementById('tPrecio').value)}); resetBot(); };
+        botInterface.append(createBubble('Cargá el trago (al poner precio, sugerimos el de Cervezas):'), form, btn, createBackBtn(2));
       }
       else if (step === 3) {
-        botInterface.append(createBubble('¿Marca?'), createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (s) => { currentData.marca = s; step = 4; renderBot(); }));
+        botInterface.append(createBubble('¿Marca?'), createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (s) => { currentData.marca = s; step = 4; renderBot(); }), createBackBtn(2));
       }
       else if (step === 4) {
         let data = db[currentData.categoria][currentData.subcategoria][currentData.marca];
         let grid = document.createElement('div'); grid.className = 'checkbox-grid';
         data.var.forEach(v => grid.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${v}"><span>${v}</span></label>`);
+        if(data.var.length===0) grid.innerHTML='<small>Sin variedades.</small>';
         let sel = document.createElement('select'); sel.className = 'form-input'; sel.id = 'calSel';
         data.cal.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '15px'; btn.textContent = 'Continuar';
         btn.onclick = () => { 
-          selectedCombinations = Array.from(grid.querySelectorAll('input:checked')).map(cb => ({variedad: cb.value, calibre: sel.value}));
+          let chks = grid.querySelectorAll('input:checked');
+          selectedCombinations = data.var.length===0 ? [{variedad:'', calibre:sel.value}] : Array.from(chks).map(cb => ({variedad: cb.value, calibre: sel.value}));
+          if(selectedCombinations.length===0) return alert('Elegí una variedad.');
           step = 5; renderBot();
         };
-        botInterface.append(createBubble('Seleccioná:'), grid, sel, btn);
+        botInterface.append(createBubble('Seleccioná:'), grid, sel, btn, createBackBtn(3));
       }
       else if (step === 5) {
         let grid = document.createElement('div'); grid.className = 'prices-grid';
         selectedCombinations.forEach((item, i) => {
-          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><input type="text" id="price_${i}" placeholder="$" onblur="calcularSugerencia('${currentData.marca}','${item.calibre}',this.value,'Cervezas')"></div>`;
+          let blurEvent = (currentData.subcategoria === 'Cervezas') ? `onblur="calcularSugerencia('${currentData.marca}','${item.calibre}',this.value,'Cervezas')"` : '';
+          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><input type="text" id="price_${i}" placeholder="$" ${blurEvent}></div>`;
         });
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Todo';
-        btn.onclick = () => { selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: '$'+document.getElementById(`price_${i}`).value}); }); resetBot(); };
-        botInterface.append(createBubble('Ingresá precios (o usá el pop-up):'), grid, btn);
+        btn.onclick = () => { selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value)}); }); resetBot(); };
+        botInterface.append(createBubble('Ingresá precios (al salir de la casilla se calcularán sugerencias):'), grid, btn, createBackBtn(4));
       }
     }
 
     // UTILS
     function createBubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.textContent = t; return d; }
     function createOptions(a, cb) { let d = document.createElement('div'); d.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o; b.onclick = () => cb(o); d.appendChild(b); }); return d; }
-    function resetBot() { step = 1; currentData = {}; selectedCombinations = []; actualizarListas(); renderBot(); }
+    function createBackBtn(s) { let b = document.createElement('button'); b.className = 'restart-btn'; b.textContent = '← Volver'; b.onclick = () => { step=s; renderBot(); }; return b; }
+    function formatPrecio(v) { return !v ? 'A definir' : (v.toString().startsWith('$') ? v : `$${v}`); }
+    function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); actualizarListas(); renderBot(); }
     
+    // RENDERIZAR LISTAS
     function actualizarListas() {
       Object.values(sections).forEach(s => { s.list.innerHTML = ''; s.container.style.display = 'none'; });
       if(itemsAgregados.length > 0) {
@@ -234,14 +273,67 @@
           let sk = it.categoria; if(it.subcategoria==='Tragos') sk = 'Tragos';
           sections[sk].container.style.display = 'block';
           let d = document.createElement('div'); d.className = 'summary-item';
-          d.innerHTML = `<div><strong>${it.marca} ${it.variedad}</strong><br><small>${it.calibre}</small></div><div style="font-weight:bold">${it.precio}</div>`;
+          d.innerHTML = `<div><strong>${it.marca} ${it.variedad}</strong><br><small style="color:#6b7280">${it.calibre}</small></div><div style="font-weight:bold; color:#059669;">${it.precio}</div>`;
           sections[sk].list.appendChild(d);
         });
       }
     }
 
-    function terminarCarta() { document.getElementById('mainAppContent').style.display = 'none'; document.getElementById('successScreen').style.display = 'block'; document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CARTA-LISTA`; }
-    function descargarQR() { alert('Descargando QR...'); }
+    function cargarCartaIdeal() {
+      itemsAgregados.push(
+        {id:idCounter++, categoria:"Sin alcohol", subcategoria:"Gaseosas", marca:"Pepsi", variedad:"Black", calibre:"Lata 354ml", precio:"A definir"},
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:"$4500"},
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:"$4950"}
+      );
+      actualizarListas(); resetBot();
+    }
+
+    // ==========================================
+    // ENVÍO DE DATOS A GOOGLE SHEETS Y QR
+    // ==========================================
+    async function terminarCarta() {
+      const btn = document.getElementById('btnTerminar');
+      btn.disabled = true;
+      btn.innerText = "Generando Documento...";
+
+      const payload = {
+        items: itemsAgregados,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+
+        if (result.ok) {
+          document.getElementById('mainAppContent').style.display = 'none';
+          document.getElementById('successScreen').style.display = 'block';
+          
+          // Generamos el QR apuntando a la URL del Documento que nos devolvió Apps Script
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
+          document.getElementById('qrImage').src = qrUrl;
+        } else {
+          alert("Error: " + result.error);
+          btn.disabled = false;
+          btn.innerText = "Generar Menú y Crear QR";
+        }
+      } catch (error) {
+        alert("Error al conectar con el servidor. Revisá la consola.");
+        btn.disabled = false;
+        btn.innerText = "Generar Menú y Crear QR";
+      }
+    }
+
+    function descargarQR() {
+      fetch(document.getElementById('qrImage').src).then(resp => resp.blob()).then(blob => {
+        const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "QR_Menu.png";
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+    }
 
     initApp();
   </script>
