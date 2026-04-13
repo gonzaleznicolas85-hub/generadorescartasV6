@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta (Secciones y Tragos)</title>
+  <title>Bot Preview - Generador de Carta</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -64,24 +64,24 @@
 
     .checkbox-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 12px;
-      margin-bottom: 20px;
     }
 
     .checkbox-item {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
       background: #f8fafc;
       padding: 10px;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 14px;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .checkbox-item input { margin-top: 3px; }
+    .checkbox-item input { margin-top: 1px; }
 
     .prices-grid {
       display: flex;
@@ -107,6 +107,8 @@
       border-radius: 8px;
       outline: none;
       font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     .price-row input { width: 100px; text-align: right; }
@@ -157,7 +159,7 @@
     .action-btn:hover { background: #374151; }
 
     .finish-btn {
-      background: #059669; /* Verde */
+      background: #059669; 
       margin-top: 24px;
     }
     .finish-btn:hover { background: #047857; }
@@ -170,7 +172,7 @@
 
     .category-section {
       margin-bottom: 24px;
-      display: none; /* Se muestra por JS si hay ítems */
+      display: none; 
     }
 
     .category-title {
@@ -239,8 +241,13 @@
       </div>
 
       <div id="sectionConAlcohol" class="category-section">
-        <h4 class="category-title">🍺🍹 Bebidas Con Alcohol</h4>
+        <h4 class="category-title">🍺 Cervezas</h4>
         <div id="listConAlcohol"></div>
+      </div>
+
+      <div id="sectionTragos" class="category-section">
+        <h4 class="category-title">🍹 Tragos y Cocktails</h4>
+        <div id="listTragos"></div>
       </div>
 
       <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">
@@ -250,7 +257,24 @@
   </div>
 
   <script>
-    // 1. BASE DE DATOS
+    // 1. JERARQUÍA DE SEGMENTOS DE CERVEZA (Para ordenar automáticamente)
+    const segmentOrder = {
+      "1890": 1,
+      "Quilmes": 2,
+      "Brahma": 2,
+      "Budweiser": 2,
+      "Michelob Ultra": 3,
+      "Andes Origen": 3,
+      "Stella Artois": 4,
+      "Patagonia": 4,
+      "Corona": 4
+    };
+
+    function getSegmentRank(marca) {
+      return segmentOrder[marca] || 99; 
+    }
+
+    // 2. BASE DE DATOS
     const db = {
       "Sin alcohol": {
         "Gaseosas": {
@@ -285,11 +309,11 @@
           "Patagonia": { var: ["Amber Lager", "IPA", "Lager del Sur", "Vera IPA", "Weisse"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
           "Corona": { var: ["Clásica"], cal: ["Porrón 330ml", "Botella 710ml"] }
         },
-        "Tragos": "dinamico" // Indicador para el modo libre
+        "Tragos": "dinamico"
       }
     };
 
-    // 2. ESTADO
+    // 3. ESTADO
     let currentData = {};
     let selectedCombinations = [];
     let step = 1;
@@ -300,11 +324,13 @@
     const emptyState = document.getElementById('emptyState');
     const sectionSinAlcohol = document.getElementById('sectionSinAlcohol');
     const sectionConAlcohol = document.getElementById('sectionConAlcohol');
+    const sectionTragos = document.getElementById('sectionTragos');
     const listSinAlcohol = document.getElementById('listSinAlcohol');
     const listConAlcohol = document.getElementById('listConAlcohol');
+    const listTragos = document.getElementById('listTragos');
     const btnTerminar = document.getElementById('btnTerminar');
 
-    // 3. RENDERIZADO DEL BOT
+    // 4. RENDERIZADO DEL BOT
     function renderBot() {
       botInterface.innerHTML = ''; 
 
@@ -322,7 +348,6 @@
         const options = createOptions(Object.keys(db[currentData.categoria]), (selected) => {
           currentData.subcategoria = selected;
           
-          // Si eligió tragos, saltamos al formulario libre (Step 3b)
           if (selected === 'Tragos') {
             step = 'tragos_form';
           } else {
@@ -396,38 +421,60 @@
       } 
       
       else if (step === 4) {
-        const bubble = createBubble(`¡Genial! Seleccioná todas las variedades y calibres de ${currentData.marca} que quieras agregar:`);
-        
+        const bubble = createBubble(`¡Genial! Seleccioná las variedades y el calibre de ${currentData.marca} que quieras agregar:`);
         const dataMarca = db[currentData.categoria][currentData.subcategoria][currentData.marca];
+        
+        // 1. Checkboxes para variedades
+        const varLabel = document.createElement('div');
+        varLabel.className = 'form-group';
+        varLabel.innerHTML = '<label>1. Tildá las variedades:</label>';
+        
         const grid = document.createElement('div');
         grid.className = 'checkbox-grid';
 
         dataMarca.var.forEach(variedad => {
-          dataMarca.cal.forEach(calibre => {
-            const label = document.createElement('label');
-            label.className = 'checkbox-item';
-            label.innerHTML = `
-              <input type="checkbox" value="${variedad}|${calibre}">
-              <span><strong>${variedad}</strong><br><span style="color:#6b7280">${calibre}</span></span>
-            `;
-            grid.appendChild(label);
-          });
+          const label = document.createElement('label');
+          label.className = 'checkbox-item';
+          label.innerHTML = `
+            <input type="checkbox" value="${variedad}">
+            <span>${variedad}</span>
+          `;
+          grid.appendChild(label);
         });
+
+        // 2. Dropdown para Calibres
+        const calGroup = document.createElement('div');
+        calGroup.className = 'form-group';
+        calGroup.style.marginTop = '18px';
+        calGroup.innerHTML = '<label>2. Elegí la presentación (calibre):</label>';
+        
+        const calSelect = document.createElement('select');
+        calSelect.className = 'form-input';
+        calSelect.id = 'calibreSelect';
+        dataMarca.cal.forEach(calibre => {
+          calSelect.innerHTML += `<option value="${calibre}">${calibre}</option>`;
+        });
+        calGroup.appendChild(calSelect);
 
         const nextBtn = document.createElement('button');
         nextBtn.className = 'action-btn';
+        nextBtn.style.marginTop = '20px';
         nextBtn.textContent = 'Continuar';
+        
         nextBtn.onclick = () => {
           const checkboxes = grid.querySelectorAll('input:checked');
-          if(checkboxes.length === 0) { alert('Seleccioná al menos una opción.'); return; }
+          if(checkboxes.length === 0) { alert('Seleccioná al menos una variedad.'); return; }
+          
+          const calibreSeleccionado = document.getElementById('calibreSelect').value;
+          
           selectedCombinations = Array.from(checkboxes).map(cb => {
-            const [variedad, calibre] = cb.value.split('|');
-            return { variedad, calibre };
+            return { variedad: cb.value, calibre: calibreSeleccionado };
           });
+          
           step = 5; renderBot();
         };
 
-        botInterface.append(bubble, grid, nextBtn, createBackBtn());
+        botInterface.append(bubble, varLabel, grid, calGroup, nextBtn, createBackBtn());
       }
 
       else if (step === 5) {
@@ -472,7 +519,7 @@
       }
     }
 
-    // 4. FUNCIONES ÚTILES
+    // 5. FUNCIONES ÚTILES
     function createBubble(text) {
       const div = document.createElement('div');
       div.className = 'chat-bubble';
@@ -518,19 +565,21 @@
       actualizarListas();
     }
 
-    // 5. ACTUALIZAR RESUMEN (Listas separadas)
+    // 6. ACTUALIZAR RESUMEN CON ORDENAMIENTO
     function actualizarListas() {
       listSinAlcohol.innerHTML = '';
       listConAlcohol.innerHTML = '';
+      listTragos.innerHTML = '';
       
       const itemsSin = itemsAgregados.filter(i => i.categoria === 'Sin alcohol');
-      const itemsCon = itemsAgregados.filter(i => i.categoria === 'Con alcohol');
+      const itemsCon = itemsAgregados.filter(i => i.categoria === 'Con alcohol' && i.subcategoria !== 'Tragos');
+      const itemsTragos = itemsAgregados.filter(i => i.subcategoria === 'Tragos');
 
-      // Manejo de la visibilidad de los contenedores
       if (itemsAgregados.length === 0) {
         emptyState.style.display = 'block';
         sectionSinAlcohol.style.display = 'none';
         sectionConAlcohol.style.display = 'none';
+        sectionTragos.style.display = 'none';
         btnTerminar.style.display = 'none';
         return;
       } else {
@@ -546,12 +595,31 @@
         sectionSinAlcohol.style.display = 'none';
       }
 
-      // Render Con Alcohol
+      // Render Con Alcohol (Cervezas) ordenadas por Segmento
       if (itemsCon.length > 0) {
         sectionConAlcohol.style.display = 'block';
+        
+        // ORDENAMIENTO DE CERVEZAS AUTOMÁTICO
+        itemsCon.sort((a, b) => {
+          const rankA = getSegmentRank(a.marca);
+          const rankB = getSegmentRank(b.marca);
+          
+          if (rankA !== rankB) return rankA - rankB; // Orden por Segmento (Value -> High End)
+          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca); // Orden Alfabético si son del mismo segmento
+          return a.variedad.localeCompare(b.variedad); // Orden por variedad
+        });
+
         itemsCon.forEach(item => listConAlcohol.appendChild(crearElementoLista(item)));
       } else {
         sectionConAlcohol.style.display = 'none';
+      }
+
+      // Render Tragos
+      if (itemsTragos.length > 0) {
+        sectionTragos.style.display = 'block';
+        itemsTragos.forEach(item => listTragos.appendChild(crearElementoLista(item)));
+      } else {
+        sectionTragos.style.display = 'none';
       }
     }
 
@@ -559,7 +627,6 @@
       const div = document.createElement('div');
       div.className = 'summary-item';
       
-      // Armamos el texto evitando redundancias (ej: "Quilmes Clásica", pero si es Pepsi Black decimos "Pepsi Black")
       const nombreLimpio = item.variedad && item.variedad !== 'Clásica' && item.variedad !== 'Regular' && item.variedad !== '0.0%' 
         ? `${item.marca} ${item.variedad}` 
         : item.marca;
@@ -579,10 +646,8 @@
 
     function terminarCarta() {
       alert("¡Perfecto! Acá conectaríamos con tu Apps Script para procesar los datos ingresados: \n\n" + JSON.stringify(itemsAgregados, null, 2));
-      // En tu web real, acá armarías el Payload y llamarías a tu función de submit
     }
 
-    // Iniciar
     renderBot();
   </script>
 </body>
