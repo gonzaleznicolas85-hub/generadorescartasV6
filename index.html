@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta</title>
+  <title>Bot Preview - Generador de Carta (Multi-selección)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@
       border-radius: 16px;
       padding: 24px;
       width: 100%;
-      max-width: 450px;
+      max-width: 550px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     }
 
@@ -62,22 +62,57 @@
       transform: translateY(-1px);
     }
 
-    .input-group {
-      display: flex;
-      gap: 10px;
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
       margin-bottom: 20px;
     }
 
-    .input-group input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      font-size: 15px;
-      outline: none;
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
     }
 
-    .input-group input:focus {
+    .checkbox-item input {
+      margin-top: 3px;
+    }
+
+    .prices-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 10px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .price-row input {
+      width: 100px;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      outline: none;
+      text-align: right;
+    }
+
+    .price-row input:focus {
       border-color: #111111;
     }
 
@@ -86,9 +121,14 @@
       color: #fff;
       border: none;
       border-radius: 12px;
-      padding: 0 20px;
+      padding: 12px 20px;
       font-weight: bold;
       cursor: pointer;
+      width: 100%;
+    }
+
+    .action-btn:hover {
+      background: #374151;
     }
 
     .summary-list {
@@ -98,15 +138,42 @@
     }
 
     .summary-item {
-      background: #f8fafc;
+      background: #ffffff;
       border: 1px solid #e5e7eb;
-      padding: 12px;
+      padding: 12px 14px;
       border-radius: 10px;
       margin-bottom: 10px;
       font-size: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .summary-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .summary-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #991b1b;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .delete-btn:hover {
+      background: #fecaca;
     }
 
     .restart-btn {
@@ -117,6 +184,7 @@
       text-decoration: underline;
       cursor: pointer;
       margin-top: 10px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -135,96 +203,174 @@
   </div>
 
   <script>
-    // Catálogo simplificado para el bot
+    // 1. BASE DE DATOS ESTRUCTURADA
     const db = {
-      "Gaseosa": {
-        "Pepsi": ["Lata 354ml", "Botella 500ml", "1.5 Litros"],
-        "7UP": ["Lata 354ml", "Botella 500ml"]
+      "Sin alcohol": {
+        "Gaseosas": {
+          "Pepsi": { var: ["Regular", "Black", "Twist"], cal: ["Lata 354ml", "Botella 500ml", "1.5 Litros"] },
+          "7UP": { var: ["Regular", "Free"], cal: ["Lata 354ml", "Botella 500ml", "1.5 Litros"] },
+          "Mirinda": { var: ["Regular"], cal: ["Lata 354ml", "Botella 500ml", "1.5 Litros"] },
+          "Paso de los Toros": { var: ["Tónica", "Tónica Sin Azúcar", "Pomelo"], cal: ["Lata 269ml", "Botella 500ml", "1.5 Litros"] },
+          "Red Bull": { var: ["Regular"], cal: ["Lata 250ml"] },
+          "Gatorade": { var: ["Manzana", "Naranja", "Frutos Rojos"], cal: ["Botella 500ml"] },
+          "H2O": { var: ["Still", "C/Gas"], cal: ["Botella 500ml", "1.5 Litros"] }
+        },
+        "Aguas": {
+          "Nestlé Pureza Vital": { var: ["Sin Gas", "Con Gas"], cal: ["500ml", "1.5 Litros"] },
+          "Eco de los Andes": { var: ["Sin Gas", "Con Gas"], cal: ["500ml", "1.5 Litros"] },
+          "Glaciar": { var: ["Bajo Sodio"], cal: ["500ml", "1.5 Litros"] }
+        },
+        "Cervezas 0.0%": {
+          "Quilmes": { var: ["0.0%"], cal: ["Porrón", "Lata 473ml"] },
+          "Stella Artois": { var: ["0.0%"], cal: ["Porrón", "Lata 473ml"] },
+          "Corona": { var: ["Cero"], cal: ["Porrón 330ml"] }
+        }
       },
-      "Cerveza": {
-        "Quilmes": ["Lata 473ml", "Botella 1 Litro"],
-        "Stella Artois": ["Porrón", "Botella 1 Litro"],
-        "Patagonia": ["Lata 473ml", "Pinta"]
-      },
-      "Trago": {
-        "Clásicos": ["Fernet con Cola", "Campari con Naranja", "Gin Tonic"]
+      "Con alcohol": {
+        "Cervezas": {
+          "1890": { var: ["Clásica"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Quilmes": { var: ["Clásica", "IPA", "Stout"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Brahma": { var: ["Clásica"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Budweiser": { var: ["Clásica"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Michelob Ultra": { var: ["Clásica"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Andes Origen": { var: ["IPA", "Negra", "Roja", "Oro", "Rubia"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Stella Artois": { var: ["Clásica", "Pure Gold", "Noire"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Patagonia": { var: ["Amber Lager", "IPA", "Lager del Sur", "Vera IPA", "Weisse"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
+          "Corona": { var: ["Clásica"], cal: ["Porrón 330ml", "Botella 710ml"] }
+        }
       }
     };
 
-    // Estado del bot
-    let currentItem = {};
+    // 2. ESTADO DEL BOT
+    let currentData = {};
+    let selectedCombinations = [];
     let step = 1;
-    const itemsAgregados = [];
+    let itemsAgregados = []; // Acá se guardan los ítems finales
+    let idCounter = 0; // Para poder borrar ítems específicos
 
     const botInterface = document.getElementById('botInterface');
     const addedItemsDiv = document.getElementById('addedItems');
 
+    // 3. RENDERIZADO DEL BOT
     function renderBot() {
-      botInterface.innerHTML = ''; // Limpiar interfaz
+      botInterface.innerHTML = ''; 
 
       if (step === 1) {
-        // PASO 1: Categoría
-        const bubble = createBubble('¡Hola! ¿Qué tipo de bebida querés sumar a la carta?');
+        const bubble = createBubble('¡Hola! ¿Vamos con algo Con Alcohol o Sin Alcohol?');
         const options = createOptions(Object.keys(db), (selected) => {
-          currentItem.categoria = selected;
-          step = 2;
-          renderBot();
+          currentData.categoria = selected;
+          step = 2; renderBot();
         });
         botInterface.append(bubble, options);
       } 
       
       else if (step === 2) {
-        // PASO 2: Marca / Subcategoría
-        const bubble = createBubble(`Perfecto, una ${currentItem.categoria.toLowerCase()}. ¿De qué línea o marca?`);
-        const options = createOptions(Object.keys(db[currentItem.categoria]), (selected) => {
-          currentItem.marca = selected;
-          step = 3;
-          renderBot();
+        const bubble = createBubble(`Elegiste ${currentData.categoria}. ¿Qué subcategoría?`);
+        const options = createOptions(Object.keys(db[currentData.categoria]), (selected) => {
+          currentData.subcategoria = selected;
+          step = 3; renderBot();
         });
-        const backBtn = createBackBtn();
-        botInterface.append(bubble, options, backBtn);
+        botInterface.append(bubble, options, createBackBtn());
       } 
       
       else if (step === 3) {
-        // PASO 3: Presentación / Variedad
-        const text = currentItem.categoria === 'Trago' 
-          ? `¿Qué trago de la línea ${currentItem.marca}?` 
-          : `¿En qué presentación viene la ${currentItem.marca}?`;
-        
-        const bubble = createBubble(text);
-        const options = createOptions(db[currentItem.categoria][currentItem.marca], (selected) => {
-          currentItem.presentacion = selected;
-          step = 4;
-          renderBot();
+        const bubble = createBubble(`¿De qué marca o línea querés agregar?`);
+        const marcas = Object.keys(db[currentData.categoria][currentData.subcategoria]);
+        const options = createOptions(marcas, (selected) => {
+          currentData.marca = selected;
+          step = 4; renderBot();
         });
-        const backBtn = createBackBtn();
-        botInterface.append(bubble, options, backBtn);
+        botInterface.append(bubble, options, createBackBtn());
       } 
       
       else if (step === 4) {
-        // PASO 4: Precio
-        const bubble = createBubble(`¡Ya casi! ¿Qué precio tiene: ${currentItem.marca} (${currentItem.presentacion})?`);
+        const bubble = createBubble(`¡Genial! Seleccioná todas las variedades y calibres de ${currentData.marca} que quieras agregar al menú:`);
         
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'input-group';
-        inputGroup.innerHTML = `
-          <input type="number" id="precioInput" placeholder="Ej: 3500">
-          <button class="action-btn" id="saveBtn">Guardar</button>
-        `;
-        
-        const backBtn = createBackBtn();
-        botInterface.append(bubble, inputGroup, backBtn);
+        const dataMarca = db[currentData.categoria][currentData.subcategoria][currentData.marca];
+        const grid = document.createElement('div');
+        grid.className = 'checkbox-grid';
 
-        // Evento para guardar
-        document.getElementById('saveBtn').addEventListener('click', () => {
-          const val = document.getElementById('precioInput').value;
-          currentItem.precio = val ? `$${val}` : 'Sin precio';
-          guardarItem();
+        // Generar todas las combinaciones posibles
+        dataMarca.var.forEach(variedad => {
+          dataMarca.cal.forEach(calibre => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            label.innerHTML = `
+              <input type="checkbox" value="${variedad}|${calibre}">
+              <span><strong>${variedad}</strong><br><span style="color:#6b7280">${calibre}</span></span>
+            `;
+            grid.appendChild(label);
+          });
         });
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'action-btn';
+        nextBtn.textContent = 'Continuar';
+        nextBtn.onclick = () => {
+          const checkboxes = grid.querySelectorAll('input:checked');
+          if(checkboxes.length === 0) {
+            alert('Por favor, seleccioná al menos una opción.');
+            return;
+          }
+          selectedCombinations = Array.from(checkboxes).map(cb => {
+            const [variedad, calibre] = cb.value.split('|');
+            return { variedad, calibre };
+          });
+          step = 5; renderBot();
+        };
+
+        botInterface.append(bubble, grid, nextBtn, createBackBtn());
+      }
+
+      else if (step === 5) {
+        const bubble = createBubble(`Si tenés los precios, colocalos ahora. Si no, dejalos en blanco y se guardan como "A definir".`);
+        
+        const grid = document.createElement('div');
+        grid.className = 'prices-grid';
+
+        selectedCombinations.forEach((item, index) => {
+          const row = document.createElement('div');
+          row.className = 'price-row';
+          row.innerHTML = `
+            <div>
+              <strong>${currentData.marca} ${item.variedad}</strong><br>
+              <span style="color:#6b7280">${item.calibre}</span>
+            </div>
+            <input type="number" id="price_${index}" placeholder="$">
+          `;
+          grid.appendChild(row);
+        });
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-btn';
+        saveBtn.textContent = 'Guardar Bebidas';
+        saveBtn.onclick = () => {
+          selectedCombinations.forEach((item, index) => {
+            const priceVal = document.getElementById(`price_${index}`).value;
+            itemsAgregados.push({
+              id: idCounter++,
+              categoria: currentData.categoria,
+              subcategoria: currentData.subcategoria,
+              marca: currentData.marca,
+              variedad: item.variedad,
+              calibre: item.calibre,
+              precio: priceVal ? `$${priceVal}` : 'A definir'
+            });
+          });
+          
+          // Reiniciar para seguir agregando
+          currentData = {};
+          selectedCombinations = [];
+          step = 1;
+          actualizarLista();
+          renderBot();
+        };
+
+        botInterface.append(bubble, grid, saveBtn, createBackBtn());
       }
     }
 
-    // Funciones de utilidad para crear elementos del DOM
+    // 4. FUNCIONES ÚTILES
     function createBubble(text) {
       const div = document.createElement('div');
       div.className = 'chat-bubble';
@@ -251,36 +397,42 @@
       btn.textContent = '← Volver atrás';
       btn.onclick = () => {
         step--;
+        if (step < 1) step = 1;
         renderBot();
       };
       return btn;
     }
 
-    function guardarItem() {
-      itemsAgregados.push({...currentItem});
+    function borrarItem(id) {
+      itemsAgregados = itemsAgregados.filter(item => item.id !== id);
       actualizarLista();
-      
-      // Reiniciar bot
-      currentItem = {};
-      step = 1;
-      renderBot();
     }
 
     function actualizarLista() {
-      if (itemsAgregados.length === 0) return;
       addedItemsDiv.innerHTML = '';
+      if (itemsAgregados.length === 0) {
+        addedItemsDiv.innerHTML = '<div style="color: #9ca3af; font-size: 13px;">Todavía no agregaste nada.</div>';
+        return;
+      }
+      
       itemsAgregados.forEach(item => {
         const div = document.createElement('div');
         div.className = 'summary-item';
         div.innerHTML = `
-          <div><strong>${item.marca}</strong> <span style="color:#6b7280; font-size:12px;">(${item.categoria})</span><br>${item.presentacion}</div>
-          <div style="font-weight:bold;">${item.precio}</div>
+          <div class="summary-details">
+            <strong>${item.marca} ${item.variedad !== 'Clásica' && item.variedad !== 'Regular' ? item.variedad : ''}</strong>
+            <span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>
+          </div>
+          <div class="summary-actions">
+            <span style="font-weight:bold;">${item.precio}</span>
+            <button class="delete-btn" onclick="borrarItem(${item.id})">🗑️</button>
+          </div>
         `;
         addedItemsDiv.appendChild(div);
       });
     }
 
-    // Iniciar
+    // Iniciar bot
     renderBot();
   </script>
 </body>
