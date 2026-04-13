@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta</title>
+  <title>Bot Preview - Generador de Carta (Carta Ideal)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,6 +22,34 @@
       width: 100%;
       max-width: 550px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .quick-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .ideal-btn {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ideal-btn:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
     }
 
     .chat-bubble {
@@ -227,6 +255,13 @@
 <body>
 
   <div class="bot-card">
+    
+    <div class="quick-actions">
+      <button class="ideal-btn" onclick="cargarCartaIdeal()">
+        ✨ Cargar Carta Ideal
+      </button>
+    </div>
+
     <div id="botInterface">
       </div>
 
@@ -257,7 +292,7 @@
   </div>
 
   <script>
-    // 1. JERARQUÍA DE SEGMENTOS DE CERVEZA (Para ordenar automáticamente)
+    // 1. JERARQUÍA DE SEGMENTOS DE CERVEZA
     const segmentOrder = {
       "1890": 1,
       "Quilmes": 2,
@@ -329,6 +364,42 @@
     const listConAlcohol = document.getElementById('listConAlcohol');
     const listTragos = document.getElementById('listTragos');
     const btnTerminar = document.getElementById('btnTerminar');
+
+    // ==========================================
+    // NUEVA FUNCIÓN: CARGAR CARTA IDEAL
+    // ==========================================
+    function cargarCartaIdeal() {
+      // Mapeo del listado ideal solicitado al formato de la base de datos
+      const idealItems = [
+        // Sin alcohol
+        { categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Black", calibre: "Lata 354ml", precio: "A definir" },
+        { categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Regular", calibre: "Lata 354ml", precio: "A definir" },
+        { categoria: "Sin alcohol", subcategoria: "Aguas", marca: "Eco de los Andes", variedad: "Sin Gas", calibre: "500ml", precio: "A definir" },
+        { categoria: "Sin alcohol", subcategoria: "Cervezas 0.0%", marca: "Stella Artois", variedad: "0.0%", calibre: "Lata 473ml", precio: "A definir" },
+        
+        // Con alcohol
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Quilmes", variedad: "Clásica", calibre: "Botella 1 Litro", precio: "A definir" },
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" },
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Botella 1 Litro", precio: "A definir" },
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "IPA", calibre: "Lata 473ml", precio: "A definir" },
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "Roja", calibre: "Lata 473ml", precio: "A definir" },
+        { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" }
+      ];
+
+      // Insertar en el array principal asignando un ID único
+      idealItems.forEach(item => {
+        item.id = idCounter++;
+        itemsAgregados.push(item);
+      });
+      
+      actualizarListas();
+      
+      // Reiniciar el bot al paso 1 por si estaban a medio camino de agregar algo
+      currentData = {};
+      selectedCombinations = [];
+      step = 1;
+      renderBot();
+    }
 
     // 4. RENDERIZADO DEL BOT
     function renderBot() {
@@ -599,14 +670,13 @@
       if (itemsCon.length > 0) {
         sectionConAlcohol.style.display = 'block';
         
-        // ORDENAMIENTO DE CERVEZAS AUTOMÁTICO
         itemsCon.sort((a, b) => {
           const rankA = getSegmentRank(a.marca);
           const rankB = getSegmentRank(b.marca);
           
-          if (rankA !== rankB) return rankA - rankB; // Orden por Segmento (Value -> High End)
-          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca); // Orden Alfabético si son del mismo segmento
-          return a.variedad.localeCompare(b.variedad); // Orden por variedad
+          if (rankA !== rankB) return rankA - rankB; 
+          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca); 
+          return a.variedad.localeCompare(b.variedad); 
         });
 
         itemsCon.forEach(item => listConAlcohol.appendChild(crearElementoLista(item)));
