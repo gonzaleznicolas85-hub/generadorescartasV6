@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bot Preview - Generador de Carta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      margin: 0;
+    }
+
+    .bot-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .chat-bubble {
+      background: #f3f4f6;
+      color: #111827;
+      padding: 14px 18px;
+      border-radius: 16px 16px 16px 0;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      display: inline-block;
+      max-width: 90%;
+    }
+
+    .options-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: #111111;
+      border-color: #111111;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: #111111;
+    }
+
+    .action-btn {
+      background: #111111;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .summary-list {
+      margin-top: 30px;
+      border-top: 2px dashed #e5e7eb;
+      padding-top: 20px;
+    }
+
+    .summary-item {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .restart-btn {
+      background: transparent;
+      color: #6b7280;
+      border: none;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bot-card">
+    <div id="botInterface">
+      </div>
+
+    <div class="summary-list">
+      <h4 style="margin: 0 0 12px 0;">Bebidas Agregadas:</h4>
+      <div id="addedItems">
+        <div style="color: #9ca3af; font-size: 13px;">Todavía no agregaste nada.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Catálogo simplificado para el bot
+    const db = {
+      "Gaseosa": {
+        "Pepsi": ["Lata 354ml", "Botella 500ml", "1.5 Litros"],
+        "7UP": ["Lata 354ml", "Botella 500ml"]
+      },
+      "Cerveza": {
+        "Quilmes": ["Lata 473ml", "Botella 1 Litro"],
+        "Stella Artois": ["Porrón", "Botella 1 Litro"],
+        "Patagonia": ["Lata 473ml", "Pinta"]
+      },
+      "Trago": {
+        "Clásicos": ["Fernet con Cola", "Campari con Naranja", "Gin Tonic"]
+      }
+    };
+
+    // Estado del bot
+    let currentItem = {};
+    let step = 1;
+    const itemsAgregados = [];
+
+    const botInterface = document.getElementById('botInterface');
+    const addedItemsDiv = document.getElementById('addedItems');
+
+    function renderBot() {
+      botInterface.innerHTML = ''; // Limpiar interfaz
+
+      if (step === 1) {
+        // PASO 1: Categoría
+        const bubble = createBubble('¡Hola! ¿Qué tipo de bebida querés sumar a la carta?');
+        const options = createOptions(Object.keys(db), (selected) => {
+          currentItem.categoria = selected;
+          step = 2;
+          renderBot();
+        });
+        botInterface.append(bubble, options);
+      } 
+      
+      else if (step === 2) {
+        // PASO 2: Marca / Subcategoría
+        const bubble = createBubble(`Perfecto, una ${currentItem.categoria.toLowerCase()}. ¿De qué línea o marca?`);
+        const options = createOptions(Object.keys(db[currentItem.categoria]), (selected) => {
+          currentItem.marca = selected;
+          step = 3;
+          renderBot();
+        });
+        const backBtn = createBackBtn();
+        botInterface.append(bubble, options, backBtn);
+      } 
+      
+      else if (step === 3) {
+        // PASO 3: Presentación / Variedad
+        const text = currentItem.categoria === 'Trago' 
+          ? `¿Qué trago de la línea ${currentItem.marca}?` 
+          : `¿En qué presentación viene la ${currentItem.marca}?`;
+        
+        const bubble = createBubble(text);
+        const options = createOptions(db[currentItem.categoria][currentItem.marca], (selected) => {
+          currentItem.presentacion = selected;
+          step = 4;
+          renderBot();
+        });
+        const backBtn = createBackBtn();
+        botInterface.append(bubble, options, backBtn);
+      } 
+      
+      else if (step === 4) {
+        // PASO 4: Precio
+        const bubble = createBubble(`¡Ya casi! ¿Qué precio tiene: ${currentItem.marca} (${currentItem.presentacion})?`);
+        
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        inputGroup.innerHTML = `
+          <input type="number" id="precioInput" placeholder="Ej: 3500">
+          <button class="action-btn" id="saveBtn">Guardar</button>
+        `;
+        
+        const backBtn = createBackBtn();
+        botInterface.append(bubble, inputGroup, backBtn);
+
+        // Evento para guardar
+        document.getElementById('saveBtn').addEventListener('click', () => {
+          const val = document.getElementById('precioInput').value;
+          currentItem.precio = val ? `$${val}` : 'Sin precio';
+          guardarItem();
+        });
+      }
+    }
+
+    // Funciones de utilidad para crear elementos del DOM
+    function createBubble(text) {
+      const div = document.createElement('div');
+      div.className = 'chat-bubble';
+      div.textContent = text;
+      return div;
+    }
+
+    function createOptions(arr, onClickCallback) {
+      const div = document.createElement('div');
+      div.className = 'options-container';
+      arr.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = () => onClickCallback(opt);
+        div.appendChild(btn);
+      });
+      return div;
+    }
+
+    function createBackBtn() {
+      const btn = document.createElement('button');
+      btn.className = 'restart-btn';
+      btn.textContent = '← Volver atrás';
+      btn.onclick = () => {
+        step--;
+        renderBot();
+      };
+      return btn;
+    }
+
+    function guardarItem() {
+      itemsAgregados.push({...currentItem});
+      actualizarLista();
+      
+      // Reiniciar bot
+      currentItem = {};
+      step = 1;
+      renderBot();
+    }
+
+    function actualizarLista() {
+      if (itemsAgregados.length === 0) return;
+      addedItemsDiv.innerHTML = '';
+      itemsAgregados.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `
+          <div><strong>${item.marca}</strong> <span style="color:#6b7280; font-size:12px;">(${item.categoria})</span><br>${item.presentacion}</div>
+          <div style="font-weight:bold;">${item.precio}</div>
+        `;
+        addedItemsDiv.appendChild(div);
+      });
+    }
+
+    // Iniciar
+    renderBot();
+  </script>
+</body>
+</html>
