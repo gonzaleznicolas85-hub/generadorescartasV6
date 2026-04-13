@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Onboarding & Sugerencias Previas</title>
+  <title>Bot Preview - Sistema Completo (Auto-Pricing & PDF)</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -16,7 +16,6 @@
     .onboard-group label { display: block; font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 6px; }
     .onboard-group input, .onboard-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
     .onboard-group input:focus, .onboard-group select:focus { border-color: #2563eb; outline: none; }
-    .price-highlight { border: 2px solid #3b82f6 !important; background: #eff6ff; font-weight: bold; }
 
     /* BOT CHAT */
     .quick-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
@@ -34,9 +33,6 @@
     .price-row input, .form-input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box; }
     .price-row input { width: 95px; text-align: right; font-weight: bold; }
     .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
-    .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-    .form-group label { font-size: 13px; font-weight: bold; color: #374151; }
     .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px;}
     .action-btn:hover { background: #374151; }
     .action-btn:disabled { background: #9ca3af; cursor: not-allowed; }
@@ -44,7 +40,7 @@
     .finish-btn:hover { background: #047857; }
     .restart-btn { background: transparent; color: #6b7280; border: none; font-size: 13px; text-decoration: underline; cursor: pointer; margin-top: 10px; margin-bottom: 20px; }
 
-    /* RESUMEN FINAL */
+    /* RESUMEN FINAL, DRAG&DROP, EDICION */
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
@@ -63,6 +59,8 @@
     .success-screen { text-align: center; display: none; padding: 20px 0; }
     .qr-box { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e5e7eb; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .qr-box img { max-width: 200px; display: block; margin: 0 auto; }
+    .btn-pdf { background: #dc2626; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #b91c1c; }
 
     #toastSugerencia {
       position: fixed; bottom: 30px; right: 30px; background: #fff; border-left: 5px solid #3b82f6;
@@ -84,15 +82,20 @@
     
     <div id="onboardingScreen">
       <h2>⚙️ Configuración Inicial</h2>
-      <p>Completá estos datos para personalizar tu menú digital y activar el motor inteligente de precios.</p>
+      <p>Completá estos datos para personalizar el diseño de tu menú digital.</p>
       
       <div class="onboard-group">
         <label>Nombre del Restaurante / Bar</label>
         <input type="text" id="confNombre" placeholder="Ej: Bocky Bar & Grill">
       </div>
       <div class="onboard-group">
-        <label>Dirección</label>
+        <label>Dirección (Opcional)</label>
         <input type="text" id="confDir" placeholder="Ej: Av. San Martín 1234, Ciudad">
+      </div>
+      <div class="onboard-group">
+        <label>URL del Logo (Opcional)</label>
+        <input type="text" id="confLogo" placeholder="Ej: https://misitio.com/logo.png">
+        <p style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Pegá el link directo a la imagen para que aparezca en el PDF.</p>
       </div>
       <div class="onboard-group">
         <label>Estilo Visual del Menú (PDF)</label>
@@ -101,11 +104,6 @@
           <option value="Elegante">Elegante (Clásico y formal)</option>
           <option value="Bold">Bold (Impactante y fuerte)</option>
         </select>
-      </div>
-      <div class="onboard-group">
-        <label style="color:#2563eb;">💰 Precio de Referencia (Cerveza Clásica 1L)</label>
-        <p style="font-size: 12px; color: #6b7280; margin: 0 0 8px 0; font-weight: normal;">Usaremos este precio base para sugerirte los precios del resto de las bebidas automáticamente.</p>
-        <input type="number" id="confPrecioBase" class="price-highlight" placeholder="$ (Ej: 4500)">
       </div>
 
       <button class="action-btn" onclick="iniciarApp()" id="btnIniciarOnboard" disabled>⏳ Conectando base de datos...</button>
@@ -124,15 +122,21 @@
         <div id="sectionSinAlcohol" class="category-section"><h4 class="category-title">🥤 Sin Alcohol</h4><div id="listSinAlcohol"></div></div>
         <div id="sectionConAlcohol" class="category-section"><h4 class="category-title">🍺 Cervezas</h4><div id="listConAlcohol"></div></div>
         <div id="sectionTragos" class="category-section"><h4 class="category-title">🍹 Tragos</h4><div id="listTragos"></div></div>
-        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Generar Menú y Crear QR</button>
+        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Generar Menú, PDF y QR</button>
       </div>
     </div>
 
     <div id="successScreen" class="success-screen">
       <h2>🎉 ¡Menú Listo!</h2>
-      <p>Escaneá el QR para ver la carta o descargalo para tus mesas.</p>
-      <div class="qr-box"><img id="qrImage" src="" alt="QR Generando..."></div><br><br>
-      <button class="action-btn" onclick="descargarQR()" style="background: #2563eb;">⬇️ Descargar QR</button>
+      <p>Tu menú fue generado con éxito.</p>
+      
+      <button class="action-btn btn-pdf" id="btnDescargarPdf" onclick="">📄 Descargar Menú en PDF</button>
+
+      <div class="qr-box" style="margin-top: 10px;">
+        <img id="qrImage" src="" alt="QR Generando...">
+        <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">QR directo al documento</p>
+      </div>
+      
       <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Armar nueva carta</button>
     </div>
   </div>
@@ -141,7 +145,6 @@
     <button class="close-toast" onclick="cerrarToast()">✖</button>
     <div class="toast-title">💡 Estrategia de Precios</div>
     <div id="toastContent"></div>
-    <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Autocompletar Precios</button>
   </div>
 
   <script>
@@ -151,11 +154,11 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo7iHruygBKneRj2A4mnWv5usE2dFZb2BPTfr5smozMVTzr5Sf-Nj8Phwr9qweoR59/exec';
     
     let db = {}; 
-    let restauranteConfig = {}; // Guarda la configuración del paso 0
-    let precioBaseCoreGlobal = 0; // Guardará el precio de referencia para las sugerencias pre-tipeo
+    let restauranteConfig = {}; 
+    let precioBaseCoreGlobal = 0; // Capturaremos esto automáticamente
     let sugerenciasActuales = null; 
 
-    // Estado de la app
+    // Estado App
     let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0; let ordenManualActivado = false; 
     
     const botInterface = document.getElementById('botInterface');
@@ -177,7 +180,6 @@
       try {
         const response = await fetch(SCRIPT_URL);
         db = await response.json();
-        // Habilitamos el botón de iniciar cuando la DB descarga
         const btnIni = document.getElementById('btnIniciarOnboard');
         btnIni.disabled = false;
         btnIni.textContent = "Comenzar a armar carta";
@@ -188,57 +190,75 @@
 
     function iniciarApp() {
       const nom = document.getElementById('confNombre').value.trim();
-      const base = parseFloat(document.getElementById('confPrecioBase').value);
-      
       if(!nom) return alert("Por favor, ingresá el nombre del restaurante.");
-      if(!base || base <= 0) return alert("Por favor, ingresá un precio base válido para la cerveza.");
 
       restauranteConfig = {
         nombreLocal: nom,
         direccion: document.getElementById('confDir').value.trim(),
+        logoUrl: document.getElementById('confLogo').value.trim(),
         estilo: document.getElementById('confEstilo').value
       };
       
-      precioBaseCoreGlobal = base; // ACÁ ESTÁ LA MAGIA DEL ANCLA DE PRECIO
-
       document.getElementById('onboardingScreen').style.display = 'none';
       document.getElementById('mainAppContent').style.display = 'block';
       renderBot();
     }
 
     // ==========================================
-    // 2. MOTOR DE SUGERENCIAS (OnFocus)
+    // 2. MOTOR DE PRECIOS AUTO-APRENDIZAJE
     // ==========================================
+    
+    // Función que se ejecuta cuando el usuario TERMINA de escribir un precio (onblur)
+    function capturarPrecioBase(marca, precioIngresado) {
+      if (precioBaseCoreGlobal > 0) return; // Si ya aprendió el precio, no lo pisamos
+      
+      let precio = parseFloat(precioIngresado.replace(/[^0-9.]/g, ''));
+      if (isNaN(precio) || precio <= 0) return;
+
+      let rank = getSegmentRank(marca);
+      if (!rank) return; // Si no es cerveza conocida, no podemos usarla de base
+
+      // Calculamos a cuánto equivaldría la cerveza Core (base)
+      if (rank === 2) precioBaseCoreGlobal = precio;
+      else if (rank === 3) precioBaseCoreGlobal = precio / 1.10;
+      else if (rank === 4) precioBaseCoreGlobal = precio / 1.35;
+      else precioBaseCoreGlobal = precio;
+
+      precioBaseCoreGlobal = Math.round(precioBaseCoreGlobal);
+
+      // Le avisamos al usuario que el sistema aprendió
+      let html = `<div style="color:#059669; font-weight:bold; font-size:16px;">🎯 ¡Precio base calibrado!</div>
+                  <p style="margin: 8px 0 0 0; font-size:13px; color:#4b5563;">El sistema calculó tu estrategia de rentabilidad. Al hacer clic en las demás bebidas, te daremos la sugerencia automática.</p>`;
+      
+      document.getElementById('toastContent').innerHTML = html;
+      document.getElementById('toastSugerencia').classList.add('show');
+      setTimeout(cerrarToast, 6000);
+    }
+
+    // Función que se ejecuta cuando el usuario TOCA una caja vacía (onfocus)
     function sugerirPrecios(marca, subcategoria, indexInput) {
-      if (precioBaseCoreGlobal <= 0) return; // Por si acaso
+      if (precioBaseCoreGlobal <= 0) return; // Si no hay precio base, no hay sugerencia
 
       let rank = getSegmentRank(marca);
       let sugestion = 0;
-      let mensaje = "";
 
-      // Calculamos cuánto debería costar basado en la ancla que puso en el Onboarding
       if (subcategoria === 'Tragos') {
         sugestion = Math.round(precioBaseCoreGlobal * 2);
-        mensaje = `El precio base de Cerveza es $${precioBaseCoreGlobal}.<br>Sugerencia para Tragos (Base x2):`;
       } else {
         if (rank === 2) sugestion = precioBaseCoreGlobal;
         else if (rank === 3) sugestion = Math.round(precioBaseCoreGlobal * 1.10);
         else if (rank === 4) sugestion = Math.round(precioBaseCoreGlobal * 1.35);
-        else sugestion = precioBaseCoreGlobal; // Value u otros
-
-        mensaje = `Basado en tu precio de referencia ($${precioBaseCoreGlobal}):`;
+        else sugestion = precioBaseCoreGlobal; 
       }
 
       if (sugestion > 0) {
-        // Ponemos el placeholder en gris por si el usuario solo quiere mirar
         document.getElementById(`price_${indexInput}`).placeholder = `$${sugestion}`;
-        
-        // Armamos el objeto para que el botón de autocompletar lo rellene
         sugerenciasActuales = { valorSugerido: sugestion, inputId: `price_${indexInput}` };
 
-        let html = `${mensaje}<ul class="toast-list">
+        let html = `Calculado según tu carga anterior:<ul class="toast-list">
           <li>Sugerido para <strong>${marca}</strong>: <span style="font-size:16px; color:#059669; font-weight:bold;">$${sugestion}</span></li>
-        </ul>`;
+        </ul>
+        <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Autocompletar este campo</button>`;
         
         document.getElementById('toastContent').innerHTML = html;
         document.getElementById('toastSugerencia').classList.add('show');
@@ -274,7 +294,7 @@
       else if (step === 'combo_3') {
         let form = document.createElement('div');
         form.innerHTML = `<div class="form-group"><label>Comida</label><input type="text" id="comboComida" class="form-input" placeholder="Ej: Hamburguesa"></div><div class="hh-toggle-container"><input type="checkbox" id="hhToggle" onchange="document.getElementById('hhInputBox').style.display = this.checked ? 'block' : 'none'"><label for="hhToggle" style="margin:0; cursor:pointer;">Precio Happy Hour</label></div><div class="price-inputs" style="justify-content:flex-start;"><input type="text" id="comboPrecio" class="form-input" placeholder="Normal $"><div id="hhInputBox" style="display:none;"><input type="text" id="comboPrecioHH" class="form-input" placeholder="HH $" style="border-color:#f97316;"></div></div>`;
-        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Combo';
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '16px'; btn.textContent = 'Guardar Combo';
         btn.onclick = () => {
           let comida = document.getElementById('comboComida').value;
           if (!comida) return alert("Falta comida.");
@@ -288,11 +308,10 @@
       }
       else if (step === 'tragos_form') {
         let form = document.createElement('div');
-        // Usamos onfocus para sugerir el precio del trago
         form.innerHTML = `<div class="form-group"><label>Nombre</label><input type="text" id="tNom" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="price_0" class="form-input" onfocus="sugerirPrecios('Trago', 'Tragos', 0)"></div>`;
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Trago';
         btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: formatPrecio(document.getElementById('price_0').value)}); resetBot(); };
-        botInterface.append(createBubble('Cargá el trago. Al tocar la caja de precio, usaremos tu precio base para sugerirte:'), form, btn, createBackBtn(2));
+        botInterface.append(createBubble('Cargá el trago:'), form, btn, createBackBtn(2));
       }
       else if (step === 3) {
         botInterface.append(createBubble('¿Marca?'), createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (s) => { currentData.marca = s; step = 4; renderBot(); }), createBackBtn(2));
@@ -318,10 +337,11 @@
         let grid = document.createElement('div'); grid.className = 'prices-grid';
         
         selectedCombinations.forEach((item, i) => {
-          // APLICAMOS EL onfocus MAGICO ACA
-          let eventFocus = (currentData.subcategoria === 'Cervezas') ? `onfocus="sugerirPrecios('${currentData.marca}', 'Cervezas', ${i})"` : '';
+          // Eventos mágicos: onblur (para capturar base), onfocus (para sugerir)
+          let evFocus = (currentData.subcategoria === 'Cervezas') ? `onfocus="sugerirPrecios('${currentData.marca}', 'Cervezas', ${i})"` : '';
+          let evBlur = (currentData.subcategoria === 'Cervezas') ? `onblur="capturarPrecioBase('${currentData.marca}', this.value)"` : '';
           
-          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><div class="price-inputs"><input type="text" id="price_${i}" placeholder="$" ${eventFocus}><input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;"></div></div>`;
+          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><div class="price-inputs"><input type="text" id="price_${i}" placeholder="$" ${evFocus} ${evBlur}><input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;"></div></div>`;
         });
         
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Bebidas';
@@ -329,7 +349,7 @@
           const useHH = document.getElementById('globalHHToggle').checked;
           selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value), precioHH: useHH ? formatPrecio(document.getElementById(`priceHH_${i}`).value) : null}); }); resetBot(); 
         };
-        botInterface.append(createBubble('Hacé clic en la caja de precio para ver la sugerencia matemática:'), hhContainer, grid, btn, createBackBtn(4));
+        botInterface.append(createBubble('Ingresá el precio (si es tu primer precio, el sistema aprenderá de ahí):'), hhContainer, grid, btn, createBackBtn(4));
       }
     }
 
@@ -341,7 +361,7 @@
     function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); ordenarItemsAgregados(); actualizarListas(); renderBot(); }
     
     // ==========================================
-    // 4. DRAG & DROP Y EDICIÓN
+    // 4. DRAG & DROP Y EDICIÓN (MANTENIDOS)
     // ==========================================
     let draggedItemId = null;
     function handleDragStart(e) { draggedItemId = this.dataset.id; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); }
@@ -389,7 +409,7 @@
         </div>
         <div class="summary-actions" style="flex-direction: column; align-items: flex-end;">
           <div style="display:flex; gap:4px;"><input type="text" id="edit_precio_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right;" value="${item.precio}" placeholder="Normal"><input type="text" id="edit_precioHH_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right; border-color:#f97316;" value="${item.precioHH || ''}" placeholder="HH"></div>
-          <div style="display:flex; gap:4px; margin-top:4px;"><button class="action-btn" style="padding: 4px 10px; width: auto; font-size: 12px;" onclick="guardarEdicion(${id})">💾 Guardar</button><button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()">❌</button></div>
+          <div style="display:flex; gap:4px; margin-top:4px;"><button class="action-btn" style="padding: 4px 10px; width: auto; font-size: 12px;" onclick="guardarEdicion(${id})">💾</button><button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()">❌</button></div>
         </div>
       `;
     }
@@ -434,17 +454,21 @@
     }
 
     function cargarCartaIdeal() {
-      // Ajustamos los precios ideales en base a la configuración que puso el usuario!
+      // Como no tenemos precio base inicial, usamos placeholders genéricos
       itemsAgregados.push(
         {id:idCounter++, categoria:"Sin alcohol", subcategoria:"Gaseosas", marca:"Pepsi", variedad:"Black", calibre:"Lata 354ml", precio:"A definir"},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$${precioBaseCoreGlobal}`, precioHH: `$${Math.round(precioBaseCoreGlobal*0.8)}`},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:`$${Math.round(precioBaseCoreGlobal*1.1)}`}
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$4500`, precioHH: `$3800`},
+        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:`$4950`}
       );
+      
+      // Auto-calibramos la base al usar la carta ideal para que funcione la sugerencia de Tragos
+      if(precioBaseCoreGlobal === 0) precioBaseCoreGlobal = 4500;
+      
       actualizarListas(); resetBot();
     }
 
     // ==========================================
-    // 5. ENVÍO A BACKEND Y QR
+    // 5. ENVÍO A BACKEND, PDF Y QR
     // ==========================================
     async function terminarCarta() {
       const btn = document.getElementById('btnTerminar');
@@ -452,7 +476,7 @@
 
       const payload = {
         items: itemsAgregados,
-        config: restauranteConfig, // Enviamos el estilo, nombre y dirección al Apps Script
+        config: restauranteConfig,
         timestamp: new Date().toISOString()
       };
 
@@ -463,6 +487,10 @@
         if (result.ok) {
           document.getElementById('mainAppContent').style.display = 'none';
           document.getElementById('successScreen').style.display = 'block';
+          
+          // Configuramos el botón de PDF con la URL mágica que mandó el backend
+          document.getElementById('btnDescargarPdf').onclick = () => window.open(result.pdfUrl, '_blank');
+
           document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
         } else {
           alert("Error del servidor: " + result.error);
@@ -474,14 +502,6 @@
       }
     }
 
-    function descargarQR() {
-      fetch(document.getElementById('qrImage').src).then(resp => resp.blob()).then(blob => {
-        const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `QR_${restauranteConfig.nombreLocal}.png`;
-        document.body.appendChild(a); a.click(); a.remove();
-      });
-    }
-
-    // INICIO DEL CICLO
     cargarBD();
   </script>
 </body>
