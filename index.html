@@ -366,10 +366,9 @@
     const btnTerminar = document.getElementById('btnTerminar');
 
     // ==========================================
-    // NUEVA FUNCIÓN: CARGAR CARTA IDEAL
+    // FUNCIÓN: CARGAR CARTA IDEAL
     // ==========================================
     function cargarCartaIdeal() {
-      // Mapeo del listado ideal solicitado al formato de la base de datos
       const idealItems = [
         // Sin alcohol
         { categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Black", calibre: "Lata 354ml", precio: "A definir" },
@@ -386,7 +385,6 @@
         { categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: "A definir" }
       ];
 
-      // Insertar en el array principal asignando un ID único
       idealItems.forEach(item => {
         item.id = idCounter++;
         itemsAgregados.push(item);
@@ -394,7 +392,6 @@
       
       actualizarListas();
       
-      // Reiniciar el bot al paso 1 por si estaban a medio camino de agregar algo
       currentData = {};
       selectedCombinations = [];
       step = 1;
