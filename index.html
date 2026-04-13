@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Sistema Completo (Auto-Pricing & PDF)</title>
+  <title>Bot Preview - Carga de Logo y PDF Directo</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -16,6 +16,11 @@
     .onboard-group label { display: block; font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 6px; }
     .onboard-group input, .onboard-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
     .onboard-group input:focus, .onboard-group select:focus { border-color: #2563eb; outline: none; }
+    
+    /* Estilo para input file */
+    .onboard-group input[type="file"] { border: 2px dashed #d1d5db; background: #f9fafb; cursor: pointer; padding: 20px; text-align: center; color: #6b7280; }
+    .onboard-group input[type="file"]:hover { border-color: #2563eb; background: #eff6ff; }
+    #logoPreview { max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 8px; display: none; border: 1px solid #e5e7eb; }
 
     /* BOT CHAT */
     .quick-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
@@ -33,6 +38,9 @@
     .price-row input, .form-input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box; }
     .price-row input { width: 95px; text-align: right; font-weight: bold; }
     .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
+    .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: bold; color: #374151; }
     .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px;}
     .action-btn:hover { background: #374151; }
     .action-btn:disabled { background: #9ca3af; cursor: not-allowed; }
@@ -40,10 +48,11 @@
     .finish-btn:hover { background: #047857; }
     .restart-btn { background: transparent; color: #6b7280; border: none; font-size: 13px; text-decoration: underline; cursor: pointer; margin-top: 10px; margin-bottom: 20px; }
 
-    /* RESUMEN FINAL, DRAG&DROP, EDICION */
+    /* RESUMEN FINAL, DRAG & DROP Y EDICIÓN */
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
+    
     .summary-item { background: #ffffff; border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease; }
     .summary-item.dragging { opacity: 0.4; border: 2px dashed #9ca3af; transform: scale(0.98); }
     .summary-item.over { border-top: 3px solid #3b82f6; }
@@ -51,16 +60,23 @@
     .drag-handle:active { cursor: grabbing; }
     .summary-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
     .summary-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    
     .delete-btn, .edit-btn { border: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
     .delete-btn { background: #fee2e2; color: #991b1b; }
+    .delete-btn:hover { background: #fecaca; }
     .edit-btn { background: #e0f2fe; color: #0369a1; }
+    .edit-btn:hover { background: #bae6fd; }
 
-    /* PANTALLA EXITO Y TOAST */
+    /* PANTALLA EXITO, PDF Y TOAST */
     .success-screen { text-align: center; display: none; padding: 20px 0; }
     .qr-box { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e5e7eb; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .qr-box img { max-width: 200px; display: block; margin: 0 auto; }
-    .btn-pdf { background: #dc2626; margin-bottom: 12px; }
-    .btn-pdf:hover { background: #b91c1c; }
+    
+    /* Botones especiales de descarga */
+    .btn-download-pdf { background: #dc2626; color: white; margin-bottom: 10px; }
+    .btn-download-pdf:hover { background: #b91c1c; }
+    .btn-download-doc { background: #2563eb; color: white; margin-bottom: 10px; }
+    .btn-download-doc:hover { background: #1d4ed8; }
 
     #toastSugerencia {
       position: fixed; bottom: 30px; right: 30px; background: #fff; border-left: 5px solid #3b82f6;
@@ -92,11 +108,14 @@
         <label>Dirección (Opcional)</label>
         <input type="text" id="confDir" placeholder="Ej: Av. San Martín 1234, Ciudad">
       </div>
+      
       <div class="onboard-group">
-        <label>URL del Logo (Opcional)</label>
-        <input type="text" id="confLogo" placeholder="Ej: https://misitio.com/logo.png">
-        <p style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Pegá el link directo a la imagen para que aparezca en el PDF.</p>
+        <label>Logo del Lugar (Cargar Archivo)</label>
+        <input type="file" id="onboardLogo" accept="image/png, image/jpeg" onchange="procesarArchivoLogo(this)">
+        <p style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Subí tu logo (PNG o JPG). Aparecerá en la cabecera del menú.</p>
+        <img id="logoPreview" src="" alt="Previsualización del logo">
       </div>
+
       <div class="onboard-group">
         <label>Estilo Visual del Menú (PDF)</label>
         <select id="confEstilo">
@@ -122,19 +141,22 @@
         <div id="sectionSinAlcohol" class="category-section"><h4 class="category-title">🥤 Sin Alcohol</h4><div id="listSinAlcohol"></div></div>
         <div id="sectionConAlcohol" class="category-section"><h4 class="category-title">🍺 Cervezas</h4><div id="listConAlcohol"></div></div>
         <div id="sectionTragos" class="category-section"><h4 class="category-title">🍹 Tragos</h4><div id="listTragos"></div></div>
-        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Generar Menú, PDF y QR</button>
+        <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">Generar Menú, Doc y PDF</button>
       </div>
     </div>
 
     <div id="successScreen" class="success-screen">
       <h2>🎉 ¡Menú Listo!</h2>
-      <p>Tu menú fue generado con éxito.</p>
+      <p>Tu menú fue generado con éxito. Ya podés descargarlo.</p>
       
-      <button class="action-btn btn-pdf" id="btnDescargarPdf" onclick="">📄 Descargar Menú en PDF</button>
+      <div style="display:flex; flex-direction:column; gap:8px; max-width:300px; margin: 0 auto 20px auto;">
+        <button class="action-btn btn-download-pdf" id="btnDescargarPdf" onclick="">📄 Descargar Menú en PDF</button>
+        <button class="action-btn btn-download-doc" id="btnDescargarDoc" onclick="">📝 Ver/Editar Google Doc</button>
+      </div>
 
-      <div class="qr-box" style="margin-top: 10px;">
+      <div class="qr-box">
         <img id="qrImage" src="" alt="QR Generando...">
-        <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">QR directo al documento</p>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">Escaneá para ver el documento online</p>
       </div>
       
       <button class="restart-btn" onclick="location.reload()" style="display: block; margin: 20px auto;">Armar nueva carta</button>
@@ -149,16 +171,15 @@
 
   <script>
     // ====================================================================
-    // URL DE APPS SCRIPT
+    // URL DE TU APPS SCRIPT
     // ====================================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo7iHruygBKneRj2A4mnWv5usE2dFZb2BPTfr5smozMVTzr5Sf-Nj8Phwr9qweoR59/exec';
     
     let db = {}; 
     let restauranteConfig = {}; 
-    let precioBaseCoreGlobal = 0; // Capturaremos esto automáticamente
+    let logoBase64String = ""; // Guardaremos la imagen del logo acá
+    let precioBaseCoreGlobal = 0; // Se capturará automáticamente
     let sugerenciasActuales = null; 
-
-    // Estado App
     let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0; let ordenManualActivado = false; 
     
     const botInterface = document.getElementById('botInterface');
@@ -174,17 +195,33 @@
     function formatPrecio(v) { return !v ? 'A definir' : (v.toString().startsWith('$') ? v : `$${v}`); }
 
     // ==========================================
-    // 1. CARGA INICIAL
+    // 1. INICIALIZACIÓN Y ONBOARDING (LOGO)
     // ==========================================
     async function cargarBD() {
       try {
         const response = await fetch(SCRIPT_URL);
         db = await response.json();
         const btnIni = document.getElementById('btnIniciarOnboard');
-        btnIni.disabled = false;
-        btnIni.textContent = "Comenzar a armar carta";
+        btnIni.disabled = false; btnIni.textContent = "Comenzar a armar carta";
       } catch (e) {
         document.getElementById('btnIniciarOnboard').textContent = "❌ Error de conexión (Revisar URL)";
+      }
+    }
+
+    // Función mágica para leer el archivo cargado y convertirlo a Base64
+    function procesarArchivoLogo(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // Guardamos la cadena gigante de texto (Base64)
+          logoBase64String = e.target.result;
+          // Mostramos previsualización
+          const preview = document.getElementById('logoPreview');
+          preview.src = logoBase64String;
+          preview.style.display = 'block';
+        };
+        // Leemos el archivo como una URL de datos (Base64)
+        reader.readAsDataURL(input.files[0]);
       }
     }
 
@@ -195,7 +232,7 @@
       restauranteConfig = {
         nombreLocal: nom,
         direccion: document.getElementById('confDir').value.trim(),
-        logoUrl: document.getElementById('confLogo').value.trim(),
+        logoBase64: logoBase64String, // Enviamos el logo como texto Base64
         estilo: document.getElementById('confEstilo').value
       };
       
@@ -228,7 +265,7 @@
 
       // Le avisamos al usuario que el sistema aprendió
       let html = `<div style="color:#059669; font-weight:bold; font-size:16px;">🎯 ¡Precio base calibrado!</div>
-                  <p style="margin: 8px 0 0 0; font-size:13px; color:#4b5563;">El sistema calculó tu estrategia de rentabilidad. Al hacer clic en las demás bebidas, te daremos la sugerencia automática.</p>`;
+                  <p style="margin: 8px 0 0 0; font-size:13px; color:#4b5563;">El sistema calculó tu estrategia de rentabilidad basada en tu primer precio. Al hacer clic en las demás bebidas, te daremos la sugerencia automática.</p>`;
       
       document.getElementById('toastContent').innerHTML = html;
       document.getElementById('toastSugerencia').classList.add('show');
@@ -255,7 +292,7 @@
         document.getElementById(`price_${indexInput}`).placeholder = `$${sugestion}`;
         sugerenciasActuales = { valorSugerido: sugestion, inputId: `price_${indexInput}` };
 
-        let html = `Calculado según tu carga anterior:<ul class="toast-list">
+        let html = `Calculado según tu primer precio:<ul class="toast-list">
           <li>Sugerido para <strong>${marca}</strong>: <span style="font-size:16px; color:#059669; font-weight:bold;">$${sugestion}</span></li>
         </ul>
         <button class="apply-btn" onclick="aplicarSugerenciasAutomatica()">Autocompletar este campo</button>`;
@@ -294,7 +331,7 @@
       else if (step === 'combo_3') {
         let form = document.createElement('div');
         form.innerHTML = `<div class="form-group"><label>Comida</label><input type="text" id="comboComida" class="form-input" placeholder="Ej: Hamburguesa"></div><div class="hh-toggle-container"><input type="checkbox" id="hhToggle" onchange="document.getElementById('hhInputBox').style.display = this.checked ? 'block' : 'none'"><label for="hhToggle" style="margin:0; cursor:pointer;">Precio Happy Hour</label></div><div class="price-inputs" style="justify-content:flex-start;"><input type="text" id="comboPrecio" class="form-input" placeholder="Normal $"><div id="hhInputBox" style="display:none;"><input type="text" id="comboPrecioHH" class="form-input" placeholder="HH $" style="border-color:#f97316;"></div></div>`;
-        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.style.marginTop = '16px'; btn.textContent = 'Guardar Combo';
+        let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Combo';
         btn.onclick = () => {
           let comida = document.getElementById('comboComida').value;
           if (!comida) return alert("Falta comida.");
@@ -337,7 +374,7 @@
         let grid = document.createElement('div'); grid.className = 'prices-grid';
         
         selectedCombinations.forEach((item, i) => {
-          // Eventos mágicos: onblur (para capturar base), onfocus (para sugerir)
+          // Eventos onblur y onfocus para el auto-pricing
           let evFocus = (currentData.subcategoria === 'Cervezas') ? `onfocus="sugerirPrecios('${currentData.marca}', 'Cervezas', ${i})"` : '';
           let evBlur = (currentData.subcategoria === 'Cervezas') ? `onblur="capturarPrecioBase('${currentData.marca}', this.value)"` : '';
           
@@ -349,11 +386,10 @@
           const useHH = document.getElementById('globalHHToggle').checked;
           selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value), precioHH: useHH ? formatPrecio(document.getElementById(`priceHH_${i}`).value) : null}); }); resetBot(); 
         };
-        botInterface.append(createBubble('Ingresá el precio (si es tu primer precio, el sistema aprenderá de ahí):'), hhContainer, grid, btn, createBackBtn(4));
+        botInterface.append(createBubble('Ingresá el precio (si es tu primer precio Core, el sistema aprenderá de ahí):'), hhContainer, grid, btn, createBackBtn(4));
       }
     }
 
-    // UTILS
     function toggleHHInputs(show) { selectedCombinations.forEach((_, i) => document.getElementById(`priceHH_${i}`).style.display = show ? 'block' : 'none'); }
     function createBubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.innerHTML = t; return d; }
     function createOptions(a, cb) { let d = document.createElement('div'); d.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o; b.onclick = () => cb(o); d.appendChild(b); }); return d; }
@@ -361,7 +397,7 @@
     function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); ordenarItemsAgregados(); actualizarListas(); renderBot(); }
     
     // ==========================================
-    // 4. DRAG & DROP Y EDICIÓN (MANTENIDOS)
+    // 4. DRAG & DROP Y EDICIÓN
     // ==========================================
     let draggedItemId = null;
     function handleDragStart(e) { draggedItemId = this.dataset.id; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); }
@@ -409,7 +445,7 @@
         </div>
         <div class="summary-actions" style="flex-direction: column; align-items: flex-end;">
           <div style="display:flex; gap:4px;"><input type="text" id="edit_precio_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right;" value="${item.precio}" placeholder="Normal"><input type="text" id="edit_precioHH_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right; border-color:#f97316;" value="${item.precioHH || ''}" placeholder="HH"></div>
-          <div style="display:flex; gap:4px; margin-top:4px;"><button class="action-btn" style="padding: 4px 10px; width: auto; font-size: 12px;" onclick="guardarEdicion(${id})">💾</button><button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()">❌</button></div>
+          <div style="display:flex; gap:4px; margin-top:4px;"><button class="action-btn" style="padding: 4px 10px; width: auto; font-size: 12px;" onclick="guardarEdicion(${id})">💾 Guardar</button><button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()">❌</button></div>
         </div>
       `;
     }
@@ -454,21 +490,17 @@
     }
 
     function cargarCartaIdeal() {
-      // Como no tenemos precio base inicial, usamos placeholders genéricos
+      // Usamos placeholders genéricos ya que no hay auto-pricing configurado
       itemsAgregados.push(
         {id:idCounter++, categoria:"Sin alcohol", subcategoria:"Gaseosas", marca:"Pepsi", variedad:"Black", calibre:"Lata 354ml", precio:"A definir"},
         {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$4500`, precioHH: `$3800`},
         {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"IPA", calibre:"Botella 1 Litro", precio:`$4950`}
       );
-      
-      // Auto-calibramos la base al usar la carta ideal para que funcione la sugerencia de Tragos
-      if(precioBaseCoreGlobal === 0) precioBaseCoreGlobal = 4500;
-      
       actualizarListas(); resetBot();
     }
 
     // ==========================================
-    // 5. ENVÍO A BACKEND, PDF Y QR
+    // 5. ENVÍO A BACKEND (PDF Y DOC)
     // ==========================================
     async function terminarCarta() {
       const btn = document.getElementById('btnTerminar');
@@ -476,7 +508,7 @@
 
       const payload = {
         items: itemsAgregados,
-        config: restauranteConfig,
+        config: restauranteConfig, // Incluye el Base64 del logo
         timestamp: new Date().toISOString()
       };
 
@@ -488,20 +520,30 @@
           document.getElementById('mainAppContent').style.display = 'none';
           document.getElementById('successScreen').style.display = 'block';
           
-          // Configuramos el botón de PDF con la URL mágica que mandó el backend
+          // Configuramos los botones de descarga con los links que mandó el backend
           document.getElementById('btnDescargarPdf').onclick = () => window.open(result.pdfUrl, '_blank');
+          document.getElementById('btnDescargarDoc').onclick = () => window.open(result.url, '_blank');
 
+          // El QR apunta al Documento online
           document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
         } else {
           alert("Error del servidor: " + result.error);
-          btn.disabled = false; btn.innerText = "Generar Menú y Crear QR";
+          btn.disabled = false; btn.innerText = "Generar Menú, Doc y PDF";
         }
       } catch (error) {
         alert("Error al conectar con Google Sheets.");
-        btn.disabled = false; btn.innerText = "Generar Menú y Crear QR";
+        btn.disabled = false; btn.innerText = "Generar Menú, Doc y PDF";
       }
     }
 
+    function descargarQR() {
+      fetch(document.getElementById('qrImage').src).then(resp => resp.blob()).then(blob => {
+        const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `QR_${restauranteConfig.nombreLocal}.png`;
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+    }
+
+    // INICIO DEL CICLO
     cargarBD();
   </script>
 </body>
