@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Sistema de Menú Digital Completo</title>
+  <title>Bot Preview - Sistema Completo Pro</title>
   <style>
+    /* ESTILOS GENERALES */
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .quick-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
     .ideal-btn { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
     .ideal-btn:hover { background: #dbeafe; border-color: #93c5fd; }
+    
+    /* BOT CHAT Y FORMULARIOS */
     .chat-bubble { background: #f3f4f6; color: #111827; padding: 14px 18px; border-radius: 16px 16px 16px 0; font-size: 15px; line-height: 1.5; margin-bottom: 16px; display: inline-block; max-width: 90%; }
     .options-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
     .option-btn { background: #ffffff; border: 1px solid #d1d5db; border-radius: 20px; padding: 10px 18px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.2s ease; }
@@ -21,6 +24,7 @@
     .price-inputs { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-grow: 1; }
     .price-row input, .form-input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box; }
     .price-row input { width: 85px; text-align: right; }
+    .price-row input:focus, .form-input:focus { border-color: #111111; }
     .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
     .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
     .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
@@ -30,19 +34,32 @@
     .action-btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .finish-btn { background: #059669; margin-top: 24px; }
     .finish-btn:hover { background: #047857; }
+    .restart-btn { background: transparent; color: #6b7280; border: none; font-size: 13px; text-decoration: underline; cursor: pointer; margin-top: 10px; margin-bottom: 20px; }
+
+    /* RESUMEN FINAL, DRAG & DROP Y BOTONES EDICION */
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
-    .summary-item { background: #ffffff; border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .drag-handle { cursor: grab; color: #9ca3af; margin-right: 8px; font-size: 18px; }
+    
+    .summary-item { background: #ffffff; border: 1px solid #e5e7eb; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease; }
+    .summary-item.dragging { opacity: 0.4; border: 2px dashed #9ca3af; transform: scale(0.98); }
+    .summary-item.over { border-top: 3px solid #3b82f6; }
+    .drag-handle { cursor: grab; color: #9ca3af; margin-right: 8px; font-size: 18px; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+    .summary-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+    .summary-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    
     .delete-btn, .edit-btn { border: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
     .delete-btn { background: #fee2e2; color: #991b1b; }
+    .delete-btn:hover { background: #fecaca; }
     .edit-btn { background: #e0f2fe; color: #0369a1; }
+    .edit-btn:hover { background: #bae6fd; }
+
+    /* PANTALLA EXITO Y TOAST */
     .success-screen { text-align: center; display: none; padding: 20px 0; }
     .qr-box { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e5e7eb; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .qr-box img { max-width: 200px; display: block; margin: 0 auto; }
 
-    /* ESTILOS DEL POP-UP (TOAST) DE SUGERENCIAS Y BOTÓN AUTOMÁTICO */
     #toastSugerencia {
       position: fixed; bottom: 30px; right: 30px; background: #fff; border-left: 5px solid #3b82f6;
       box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; width: 340px;
@@ -52,10 +69,7 @@
     #toastSugerencia.show { transform: translateX(0); }
     .toast-title { font-weight: bold; color: #1d4ed8; margin-bottom: 10px; font-size: 15px; }
     .toast-list { margin: 10px 0; padding-left: 20px; color: #4b5563; font-size: 13px; }
-    .apply-btn {
-      background: #2563eb; color: white; border: none; border-radius: 8px; padding: 10px 0;
-      width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 13px;
-    }
+    .apply-btn { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 10px 0; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 13px; }
     .apply-btn:hover { background: #1d4ed8; }
     .close-toast { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 16px; cursor: pointer; color: #9ca3af; }
   </style>
@@ -106,11 +120,23 @@
     
     let db = {}; 
     let sugerenciasActuales = null; 
+    let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0; let ordenManualActivado = false; 
     
-    // JERARQUÍA
+    const botInterface = document.getElementById('botInterface');
+    const sections = {
+      "Sin alcohol": { container: document.getElementById('sectionSinAlcohol'), list: document.getElementById('listSinAlcohol') },
+      "Con alcohol": { container: document.getElementById('sectionConAlcohol'), list: document.getElementById('listConAlcohol') },
+      "Tragos": { container: document.getElementById('sectionTragos'), list: document.getElementById('listTragos') },
+      "Combos": { container: document.getElementById('sectionCombos'), list: document.getElementById('listCombos') }
+    };
+
     const segmentOrder = { "1890": 1, "Quilmes": 2, "Brahma": 2, "Budweiser": 2, "Michelob Ultra": 3, "Andes Origen": 3, "Stella Artois": 4, "Patagonia": 4, "Corona": 4 };
     function getSegmentRank(m) { return segmentOrder[m] || 99; }
+    function formatPrecio(v) { return !v ? 'A definir' : (v.toString().startsWith('$') ? v : `$${v}`); }
 
+    // ==========================================
+    // INICIALIZACIÓN Y FETCH
+    // ==========================================
     async function initApp() {
       try {
         const response = await fetch(SCRIPT_URL);
@@ -123,7 +149,7 @@
     }
 
     // ==========================================
-    // MOTOR DE CÁLCULO Y AUTOMATIZACIÓN
+    // MOTOR DE SUGERENCIAS Y REVENUE
     // ==========================================
     function calcularSugerencia(marca, calibre, precioIngresado, subcategoria) {
       let precio = parseFloat(precioIngresado.replace(/[^0-9.]/g, ''));
@@ -178,17 +204,8 @@
     function cerrarToast() { document.getElementById('toastSugerencia').classList.remove('show'); sugerenciasActuales = null; }
 
     // ==========================================
-    // LOGICA APP FRONTEND
+    // FLUJO DEL BOT FRONTEND
     // ==========================================
-    let currentData = {}; let selectedCombinations = []; let step = 1; let itemsAgregados = []; let idCounter = 0;
-    const botInterface = document.getElementById('botInterface');
-    const sections = {
-      "Sin alcohol": { container: document.getElementById('sectionSinAlcohol'), list: document.getElementById('listSinAlcohol') },
-      "Con alcohol": { container: document.getElementById('sectionConAlcohol'), list: document.getElementById('listConAlcohol') },
-      "Tragos": { container: document.getElementById('sectionTragos'), list: document.getElementById('listTragos') },
-      "Combos": { container: document.getElementById('sectionCombos'), list: document.getElementById('listCombos') }
-    };
-
     function renderBot() {
       botInterface.innerHTML = '';
       if (!db["Sin alcohol"]) return; 
@@ -223,7 +240,7 @@
         form.innerHTML = `<div class="form-group"><label>Nombre</label><input type="text" id="tNom" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="tPrecio" class="form-input" onblur="calcularSugerencia('Trago','Vaso',this.value,'Tragos')"></div>`;
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Trago';
         btn.onclick = () => { itemsAgregados.push({id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tNom').value, variedad: '', calibre: 'Vaso', precio: formatPrecio(document.getElementById('tPrecio').value)}); resetBot(); };
-        botInterface.append(createBubble('Cargá el trago (al poner precio, sugerimos el de Cervezas):'), form, btn, createBackBtn(2));
+        botInterface.append(createBubble('Cargá el trago (al poner precio y salir de la caja, sugeriremos el de Cervezas):'), form, btn, createBackBtn(2));
       }
       else if (step === 3) {
         botInterface.append(createBubble('¿Marca?'), createOptions(Object.keys(db[currentData.categoria][currentData.subcategoria]), (s) => { currentData.marca = s; step = 4; renderBot(); }), createBackBtn(2));
@@ -245,37 +262,120 @@
         botInterface.append(createBubble('Seleccioná:'), grid, sel, btn, createBackBtn(3));
       }
       else if (step === 5) {
+        let hhContainer = document.createElement('div'); hhContainer.innerHTML = `<div class="hh-toggle-container"><input type="checkbox" id="globalHHToggle" onchange="toggleHHInputs(this.checked)"><label for="globalHHToggle" style="margin:0; cursor:pointer;">Activar Happy Hour</label></div>`;
         let grid = document.createElement('div'); grid.className = 'prices-grid';
         selectedCombinations.forEach((item, i) => {
           let blurEvent = (currentData.subcategoria === 'Cervezas') ? `onblur="calcularSugerencia('${currentData.marca}','${item.calibre}',this.value,'Cervezas')"` : '';
-          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><input type="text" id="price_${i}" placeholder="$" ${blurEvent}></div>`;
+          grid.innerHTML += `<div class="price-row"><div><strong>${currentData.marca} ${item.variedad}</strong><br>${item.calibre}</div><div class="price-inputs"><input type="text" id="price_${i}" placeholder="Normal $" ${blurEvent}><input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;"></div></div>`;
         });
         let btn = document.createElement('button'); btn.className = 'action-btn'; btn.textContent = 'Guardar Todo';
-        btn.onclick = () => { selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value)}); }); resetBot(); };
-        botInterface.append(createBubble('Ingresá precios (al salir de la casilla se calcularán sugerencias):'), grid, btn, createBackBtn(4));
+        btn.onclick = () => {
+          const useHH = document.getElementById('globalHHToggle').checked;
+          selectedCombinations.forEach((it, i) => { itemsAgregados.push({id: idCounter++, categoria: currentData.categoria, subcategoria: currentData.subcategoria, marca: currentData.marca, variedad: it.variedad, calibre: it.calibre, precio: formatPrecio(document.getElementById(`price_${i}`).value), precioHH: useHH ? formatPrecio(document.getElementById(`priceHH_${i}`).value) : null}); }); resetBot(); 
+        };
+        botInterface.append(createBubble('Ingresá precios (al salir de la casilla se calcularán sugerencias si aplican):'), hhContainer, grid, btn, createBackBtn(4));
       }
     }
 
-    // UTILS
+    function toggleHHInputs(show) { selectedCombinations.forEach((_, i) => document.getElementById(`priceHH_${i}`).style.display = show ? 'block' : 'none'); }
     function createBubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.textContent = t; return d; }
     function createOptions(a, cb) { let d = document.createElement('div'); d.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o; b.onclick = () => cb(o); d.appendChild(b); }); return d; }
     function createBackBtn(s) { let b = document.createElement('button'); b.className = 'restart-btn'; b.textContent = '← Volver'; b.onclick = () => { step=s; renderBot(); }; return b; }
-    function formatPrecio(v) { return !v ? 'A definir' : (v.toString().startsWith('$') ? v : `$${v}`); }
-    function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); actualizarListas(); renderBot(); }
+    function resetBot() { step = 1; currentData = {}; selectedCombinations = []; cerrarToast(); ordenarItemsAgregados(); actualizarListas(); renderBot(); }
     
-    // RENDERIZAR LISTAS
+    // ==========================================
+    // DRAG & DROP
+    // ==========================================
+    let draggedItemId = null;
+    function handleDragStart(e) { draggedItemId = this.dataset.id; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); }
+    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+    function handleDragEnter(e) { this.classList.add('over'); }
+    function handleDragLeave(e) { this.classList.remove('over'); }
+    function handleDragEnd(e) { this.classList.remove('dragging'); document.querySelectorAll('.summary-item').forEach(item => item.classList.remove('over')); }
+    function handleDrop(e) {
+      e.stopPropagation(); const targetId = this.dataset.id;
+      if (draggedItemId !== targetId) {
+        const fromIdx = itemsAgregados.findIndex(i => i.id == draggedItemId); const toIdx = itemsAgregados.findIndex(i => i.id == targetId);
+        if (itemsAgregados[fromIdx].categoria === itemsAgregados[toIdx].categoria) {
+          const [movedItem] = itemsAgregados.splice(fromIdx, 1); itemsAgregados.splice(toIdx, 0, movedItem);
+          ordenManualActivado = true; actualizarListas();
+        }
+      }
+      return false;
+    }
+
+    // ==========================================
+    // EDICIÓN EN LÍNEA Y RENDERIZADO FINAL
+    // ==========================================
+    function ordenarItemsAgregados() {
+      if (ordenManualActivado) return;
+      itemsAgregados.sort((a, b) => {
+        const catOrder = {"Combos": 1, "Sin alcohol": 2, "Con alcohol": 3};
+        if (catOrder[a.categoria] !== catOrder[b.categoria]) return catOrder[a.categoria] - catOrder[b.categoria];
+        if (a.categoria === 'Con alcohol' && a.subcategoria !== 'Tragos' && b.categoria === 'Con alcohol' && b.subcategoria !== 'Tragos') {
+          const rankA = getSegmentRank(a.marca); const rankB = getSegmentRank(b.marca);
+          if (rankA !== rankB) return rankA - rankB;
+          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca);
+          return a.variedad.localeCompare(b.variedad);
+        }
+        return 0; 
+      });
+    }
+
+    function editarItem(id) {
+      const div = document.querySelector(`.summary-item[data-id="${id}"]`);
+      if(!div) return; div.draggable = false;
+      const item = itemsAgregados.find(i => i.id === id); const isCombo = item.categoria === 'Combos';
+      let nombreLimpio = item.marca; if (!isCombo && item.variedad && !['Clásica','Regular','0.0%'].includes(item.variedad)) nombreLimpio = `${item.marca} ${item.variedad}`;
+
+      div.innerHTML = `
+        <div class="summary-details">
+          <input type="text" id="edit_name_${id}" class="form-input" style="padding: 6px; margin-bottom: 4px; font-weight: bold;" value="${nombreLimpio}">
+          <input type="text" id="edit_cal_${id}" class="form-input" style="padding: 6px; font-size: 12px; color: #6b7280;" value="${item.calibre}">
+        </div>
+        <div class="summary-actions" style="flex-direction: column; align-items: flex-end;">
+          <div style="display:flex; gap:4px;"><input type="text" id="edit_precio_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right;" value="${item.precio}" placeholder="Normal"><input type="text" id="edit_precioHH_${id}" class="form-input" style="width: 70px; padding: 6px; text-align: right; border-color:#f97316;" value="${item.precioHH || ''}" placeholder="HH"></div>
+          <div style="display:flex; gap:4px; margin-top:4px;"><button class="action-btn" style="padding: 4px 10px; width: auto; font-size: 12px;" onclick="guardarEdicion(${id})">💾 Guardar</button><button class="delete-btn" style="background:#e5e7eb; color:#374151;" onclick="actualizarListas()">❌</button></div>
+        </div>
+      `;
+    }
+
+    function guardarEdicion(id) {
+      const index = itemsAgregados.findIndex(i => i.id === id);
+      if (index > -1) {
+        itemsAgregados[index].marca = document.getElementById(`edit_name_${id}`).value; itemsAgregados[index].variedad = ''; itemsAgregados[index].calibre = document.getElementById(`edit_cal_${id}`).value;
+        itemsAgregados[index].precio = formatPrecio(document.getElementById(`edit_precio_${id}`).value); const hhVal = document.getElementById(`edit_precioHH_${id}`).value; itemsAgregados[index].precioHH = hhVal ? formatPrecio(hhVal) : null;
+      }
+      actualizarListas();
+    }
+
+    function borrarItem(id) { itemsAgregados = itemsAgregados.filter(item => item.id !== id); actualizarListas(); }
+
     function actualizarListas() {
       Object.values(sections).forEach(s => { s.list.innerHTML = ''; s.container.style.display = 'none'; });
       if(itemsAgregados.length > 0) {
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('btnTerminar').style.display = 'block';
+        document.getElementById('emptyState').style.display = 'none'; document.getElementById('btnTerminar').style.display = 'block';
         itemsAgregados.forEach(it => {
           let sk = it.categoria; if(it.subcategoria==='Tragos') sk = 'Tragos';
           sections[sk].container.style.display = 'block';
-          let d = document.createElement('div'); d.className = 'summary-item';
-          d.innerHTML = `<div><strong>${it.marca} ${it.variedad}</strong><br><small style="color:#6b7280">${it.calibre}</small></div><div style="font-weight:bold; color:#059669;">${it.precio}</div>`;
+          
+          let d = document.createElement('div'); d.className = 'summary-item'; d.dataset.id = it.id; d.draggable = true;
+          d.addEventListener('dragstart', handleDragStart); d.addEventListener('dragover', handleDragOver); d.addEventListener('dragenter', handleDragEnter); d.addEventListener('dragleave', handleDragLeave); d.addEventListener('drop', handleDrop); d.addEventListener('dragend', handleDragEnd);
+
+          let nombreLimpio = it.marca; let subtituloHTML = `<span style="color:#6b7280; font-size:12px;">${it.calibre} - ${it.subcategoria}</span>`;
+          if (it.categoria !== 'Combos' && it.variedad && !['Clásica','Regular','0.0%'].includes(it.variedad)) nombreLimpio = `${it.marca} ${it.variedad}`;
+          if (it.categoria === 'Combos') subtituloHTML = `<div style="color:#6b7280; font-size:12.5px; margin-top:4px; font-style:italic;">"${it.calibre}"</div>`;
+
+          let precioHTML = it.precioHH && it.precioHH !== 'A definir' ? `<div style="display:flex; flex-direction:column; align-items:flex-end;"><span class="hh-badge">HH: ${it.precioHH}</span><span style="text-decoration:line-through; color:#9ca3af; font-size:12px; margin-top:2px;">${it.precio}</span></div>` : `<span style="font-weight:bold; font-size:15px; color:#059669;">${it.precio}</span>`;
+
+          d.innerHTML = `
+            <div class="summary-details"><strong><span class="drag-handle" title="Arrastrar">⠿</span>${nombreLimpio}</strong>${subtituloHTML}</div>
+            <div class="summary-actions">${precioHTML}<div style="display:flex; gap:4px; margin-left:8px;"><button class="edit-btn" onclick="editarItem(${it.id})" title="Editar">✏️</button><button class="delete-btn" onclick="borrarItem(${it.id})" title="Eliminar">🗑️</button></div></div>
+          `;
           sections[sk].list.appendChild(d);
         });
+      } else {
+        document.getElementById('emptyState').style.display = 'block'; document.getElementById('btnTerminar').style.display = 'none';
       }
     }
 
@@ -289,7 +389,7 @@
     }
 
     // ==========================================
-    // ENVÍO DE DATOS A GOOGLE SHEETS Y QR
+    // ENVÍO AL BACKEND (APPS SCRIPT) Y CÓDIGO QR
     // ==========================================
     async function terminarCarta() {
       const btn = document.getElementById('btnTerminar');
@@ -313,16 +413,15 @@
           document.getElementById('mainAppContent').style.display = 'none';
           document.getElementById('successScreen').style.display = 'block';
           
-          // Generamos el QR apuntando a la URL del Documento que nos devolvió Apps Script
           const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(result.url)}`;
           document.getElementById('qrImage').src = qrUrl;
         } else {
-          alert("Error: " + result.error);
+          alert("Error del servidor: " + result.error);
           btn.disabled = false;
           btn.innerText = "Generar Menú y Crear QR";
         }
       } catch (error) {
-        alert("Error al conectar con el servidor. Revisá la consola.");
+        alert("Error al conectar con Google Sheets. Asegurate de que la URL termine en /exec y sea accesible.");
         btn.disabled = false;
         btn.innerText = "Generar Menú y Crear QR";
       }
