@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bot Preview - Generador de Carta (Multi-selección)</title>
+  <title>Bot Preview - Generador de Carta (Secciones y Tragos)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,9 +81,7 @@
       cursor: pointer;
     }
 
-    .checkbox-item input {
-      margin-top: 3px;
-    }
+    .checkbox-item input { margin-top: 3px; }
 
     .prices-grid {
       display: flex;
@@ -103,18 +101,47 @@
       font-size: 13px;
     }
 
-    .price-row input {
-      width: 100px;
-      padding: 8px;
+    .price-row input, .form-input {
+      padding: 10px 12px;
       border: 1px solid #d1d5db;
-      border-radius: 6px;
+      border-radius: 8px;
       outline: none;
-      text-align: right;
+      font-size: 14px;
+    }
+    
+    .price-row input { width: 100px; text-align: right; }
+    .price-row input:focus, .form-input:focus { border-color: #111111; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
     }
 
-    .price-row input:focus {
-      border-color: #111111;
+    .form-group label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #374151;
     }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .quick-chip {
+      font-size: 11px;
+      background: #e5e7eb;
+      color: #374151;
+      padding: 4px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .quick-chip:hover { background: #d1d5db; }
 
     .action-btn {
       background: #111111;
@@ -125,16 +152,34 @@
       font-weight: bold;
       cursor: pointer;
       width: 100%;
+      font-size: 15px;
     }
+    .action-btn:hover { background: #374151; }
 
-    .action-btn:hover {
-      background: #374151;
+    .finish-btn {
+      background: #059669; /* Verde */
+      margin-top: 24px;
     }
+    .finish-btn:hover { background: #047857; }
 
-    .summary-list {
+    .summary-container {
       margin-top: 30px;
       border-top: 2px dashed #e5e7eb;
       padding-top: 20px;
+    }
+
+    .category-section {
+      margin-bottom: 24px;
+      display: none; /* Se muestra por JS si hay ítems */
+    }
+
+    .category-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #111827;
+      margin: 0 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .summary-item {
@@ -150,16 +195,8 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
-    .summary-details {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .summary-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .summary-details { display: flex; flex-direction: column; }
+    .summary-actions { display: flex; align-items: center; gap: 12px; }
 
     .delete-btn {
       background: #fee2e2;
@@ -171,10 +208,7 @@
       font-size: 12px;
       font-weight: bold;
     }
-
-    .delete-btn:hover {
-      background: #fecaca;
-    }
+    .delete-btn:hover { background: #fecaca; }
 
     .restart-btn {
       background: transparent;
@@ -194,16 +228,29 @@
     <div id="botInterface">
       </div>
 
-    <div class="summary-list">
-      <h4 style="margin: 0 0 12px 0;">Bebidas Agregadas:</h4>
-      <div id="addedItems">
-        <div style="color: #9ca3af; font-size: 13px;">Todavía no agregaste nada.</div>
+    <div class="summary-container">
+      <div id="emptyState" style="color: #9ca3af; font-size: 14px; text-align: center; padding: 20px 0;">
+        Todavía no agregaste bebidas a la carta.
       </div>
+
+      <div id="sectionSinAlcohol" class="category-section">
+        <h4 class="category-title">🥤 Bebidas Sin Alcohol</h4>
+        <div id="listSinAlcohol"></div>
+      </div>
+
+      <div id="sectionConAlcohol" class="category-section">
+        <h4 class="category-title">🍺🍹 Bebidas Con Alcohol</h4>
+        <div id="listConAlcohol"></div>
+      </div>
+
+      <button id="btnTerminar" class="action-btn finish-btn" style="display:none;" onclick="terminarCarta()">
+        Terminar Carta
+      </button>
     </div>
   </div>
 
   <script>
-    // 1. BASE DE DATOS ESTRUCTURADA
+    // 1. BASE DE DATOS
     const db = {
       "Sin alcohol": {
         "Gaseosas": {
@@ -237,19 +284,25 @@
           "Stella Artois": { var: ["Clásica", "Pure Gold", "Noire"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
           "Patagonia": { var: ["Amber Lager", "IPA", "Lager del Sur", "Vera IPA", "Weisse"], cal: ["Porrón", "Lata 473ml", "Botella 1 Litro", "Chopp 330cc", "Chopp 500cc"] },
           "Corona": { var: ["Clásica"], cal: ["Porrón 330ml", "Botella 710ml"] }
-        }
+        },
+        "Tragos": "dinamico" // Indicador para el modo libre
       }
     };
 
-    // 2. ESTADO DEL BOT
+    // 2. ESTADO
     let currentData = {};
     let selectedCombinations = [];
     let step = 1;
-    let itemsAgregados = []; // Acá se guardan los ítems finales
-    let idCounter = 0; // Para poder borrar ítems específicos
+    let itemsAgregados = [];
+    let idCounter = 0;
 
     const botInterface = document.getElementById('botInterface');
-    const addedItemsDiv = document.getElementById('addedItems');
+    const emptyState = document.getElementById('emptyState');
+    const sectionSinAlcohol = document.getElementById('sectionSinAlcohol');
+    const sectionConAlcohol = document.getElementById('sectionConAlcohol');
+    const listSinAlcohol = document.getElementById('listSinAlcohol');
+    const listConAlcohol = document.getElementById('listConAlcohol');
+    const btnTerminar = document.getElementById('btnTerminar');
 
     // 3. RENDERIZADO DEL BOT
     function renderBot() {
@@ -265,14 +318,73 @@
       } 
       
       else if (step === 2) {
-        const bubble = createBubble(`Elegiste ${currentData.categoria}. ¿Qué subcategoría?`);
+        const bubble = createBubble(`Elegiste ${currentData.categoria}. ¿Qué subcategoría querés sumar?`);
         const options = createOptions(Object.keys(db[currentData.categoria]), (selected) => {
           currentData.subcategoria = selected;
-          step = 3; renderBot();
+          
+          // Si eligió tragos, saltamos al formulario libre (Step 3b)
+          if (selected === 'Tragos') {
+            step = 'tragos_form';
+          } else {
+            step = 3; 
+          }
+          renderBot();
         });
         botInterface.append(bubble, options, createBackBtn());
       } 
       
+      else if (step === 'tragos_form') {
+        const bubble = createBubble(`Escribí el trago que querés agregar. Podés usar los botones rápidos para autocompletar clásicos argentinos.`);
+        
+        const formContainer = document.createElement('div');
+        formContainer.innerHTML = `
+          <div class="form-group">
+            <label>Nombre del Trago</label>
+            <input type="text" id="tragoNombre" class="form-input" placeholder="Ej: Fernet con Cola">
+            <div class="quick-chips">
+              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Fernet con Cola'">Fernet c/ Cola</span>
+              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Campari con Naranja'">Campari Naranja</span>
+              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Gin Tonic'">Gin Tonic</span>
+              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Gancia con Limón'">Gancia c/ Limón</span>
+              <span class="quick-chip" onclick="document.getElementById('tragoNombre').value='Destornillador'">Destornillador</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Presentación</label>
+            <input type="text" id="tragoPres" class="form-input" placeholder="Ej: Vaso Clásico, Jarra 1L, Copa">
+          </div>
+          <div class="form-group">
+            <label>Precio (Dejar en blanco si es A definir)</label>
+            <input type="number" id="tragoPrecio" class="form-input" placeholder="$">
+          </div>
+        `;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'action-btn';
+        saveBtn.textContent = 'Guardar Trago';
+        saveBtn.onclick = () => {
+          const nombre = document.getElementById('tragoNombre').value.trim();
+          const pres = document.getElementById('tragoPres').value.trim() || 'Vaso';
+          const precio = document.getElementById('tragoPrecio').value;
+
+          if (!nombre) { alert("Por favor, ingresá el nombre del trago."); return; }
+
+          itemsAgregados.push({
+            id: idCounter++,
+            categoria: currentData.categoria,
+            subcategoria: currentData.subcategoria,
+            marca: nombre,
+            variedad: '',
+            calibre: pres,
+            precio: precio ? `$${precio}` : 'A definir'
+          });
+          
+          resetBot();
+        };
+
+        botInterface.append(bubble, formContainer, saveBtn, createBackBtn(2));
+      }
+
       else if (step === 3) {
         const bubble = createBubble(`¿De qué marca o línea querés agregar?`);
         const marcas = Object.keys(db[currentData.categoria][currentData.subcategoria]);
@@ -284,13 +396,12 @@
       } 
       
       else if (step === 4) {
-        const bubble = createBubble(`¡Genial! Seleccioná todas las variedades y calibres de ${currentData.marca} que quieras agregar al menú:`);
+        const bubble = createBubble(`¡Genial! Seleccioná todas las variedades y calibres de ${currentData.marca} que quieras agregar:`);
         
         const dataMarca = db[currentData.categoria][currentData.subcategoria][currentData.marca];
         const grid = document.createElement('div');
         grid.className = 'checkbox-grid';
 
-        // Generar todas las combinaciones posibles
         dataMarca.var.forEach(variedad => {
           dataMarca.cal.forEach(calibre => {
             const label = document.createElement('label');
@@ -308,10 +419,7 @@
         nextBtn.textContent = 'Continuar';
         nextBtn.onclick = () => {
           const checkboxes = grid.querySelectorAll('input:checked');
-          if(checkboxes.length === 0) {
-            alert('Por favor, seleccioná al menos una opción.');
-            return;
-          }
+          if(checkboxes.length === 0) { alert('Seleccioná al menos una opción.'); return; }
           selectedCombinations = Array.from(checkboxes).map(cb => {
             const [variedad, calibre] = cb.value.split('|');
             return { variedad, calibre };
@@ -323,7 +431,7 @@
       }
 
       else if (step === 5) {
-        const bubble = createBubble(`Si tenés los precios, colocalos ahora. Si no, dejalos en blanco y se guardan como "A definir".`);
+        const bubble = createBubble(`Colocá los precios. Si no los sabés, dejalos en blanco y se guardan como "A definir".`);
         
         const grid = document.createElement('div');
         grid.className = 'prices-grid';
@@ -333,7 +441,7 @@
           row.className = 'price-row';
           row.innerHTML = `
             <div>
-              <strong>${currentData.marca} ${item.variedad}</strong><br>
+              <strong>${currentData.marca} ${item.variedad !== 'Clásica' && item.variedad !== 'Regular' ? item.variedad : ''}</strong><br>
               <span style="color:#6b7280">${item.calibre}</span>
             </div>
             <input type="number" id="price_${index}" placeholder="$">
@@ -357,13 +465,7 @@
               precio: priceVal ? `$${priceVal}` : 'A definir'
             });
           });
-          
-          // Reiniciar para seguir agregando
-          currentData = {};
-          selectedCombinations = [];
-          step = 1;
-          actualizarLista();
-          renderBot();
+          resetBot();
         };
 
         botInterface.append(bubble, grid, saveBtn, createBackBtn());
@@ -391,48 +493,96 @@
       return div;
     }
 
-    function createBackBtn() {
+    function createBackBtn(forceStep = null) {
       const btn = document.createElement('button');
       btn.className = 'restart-btn';
       btn.textContent = '← Volver atrás';
       btn.onclick = () => {
-        step--;
-        if (step < 1) step = 1;
+        if (forceStep) { step = forceStep; }
+        else { step--; if (step < 1) step = 1; }
         renderBot();
       };
       return btn;
     }
 
+    function resetBot() {
+      currentData = {};
+      selectedCombinations = [];
+      step = 1;
+      actualizarListas();
+      renderBot();
+    }
+
     function borrarItem(id) {
       itemsAgregados = itemsAgregados.filter(item => item.id !== id);
-      actualizarLista();
+      actualizarListas();
     }
 
-    function actualizarLista() {
-      addedItemsDiv.innerHTML = '';
-      if (itemsAgregados.length === 0) {
-        addedItemsDiv.innerHTML = '<div style="color: #9ca3af; font-size: 13px;">Todavía no agregaste nada.</div>';
-        return;
-      }
+    // 5. ACTUALIZAR RESUMEN (Listas separadas)
+    function actualizarListas() {
+      listSinAlcohol.innerHTML = '';
+      listConAlcohol.innerHTML = '';
       
-      itemsAgregados.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'summary-item';
-        div.innerHTML = `
-          <div class="summary-details">
-            <strong>${item.marca} ${item.variedad !== 'Clásica' && item.variedad !== 'Regular' ? item.variedad : ''}</strong>
-            <span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>
-          </div>
-          <div class="summary-actions">
-            <span style="font-weight:bold;">${item.precio}</span>
-            <button class="delete-btn" onclick="borrarItem(${item.id})">🗑️</button>
-          </div>
-        `;
-        addedItemsDiv.appendChild(div);
-      });
+      const itemsSin = itemsAgregados.filter(i => i.categoria === 'Sin alcohol');
+      const itemsCon = itemsAgregados.filter(i => i.categoria === 'Con alcohol');
+
+      // Manejo de la visibilidad de los contenedores
+      if (itemsAgregados.length === 0) {
+        emptyState.style.display = 'block';
+        sectionSinAlcohol.style.display = 'none';
+        sectionConAlcohol.style.display = 'none';
+        btnTerminar.style.display = 'none';
+        return;
+      } else {
+        emptyState.style.display = 'none';
+        btnTerminar.style.display = 'block';
+      }
+
+      // Render Sin Alcohol
+      if (itemsSin.length > 0) {
+        sectionSinAlcohol.style.display = 'block';
+        itemsSin.forEach(item => listSinAlcohol.appendChild(crearElementoLista(item)));
+      } else {
+        sectionSinAlcohol.style.display = 'none';
+      }
+
+      // Render Con Alcohol
+      if (itemsCon.length > 0) {
+        sectionConAlcohol.style.display = 'block';
+        itemsCon.forEach(item => listConAlcohol.appendChild(crearElementoLista(item)));
+      } else {
+        sectionConAlcohol.style.display = 'none';
+      }
     }
 
-    // Iniciar bot
+    function crearElementoLista(item) {
+      const div = document.createElement('div');
+      div.className = 'summary-item';
+      
+      // Armamos el texto evitando redundancias (ej: "Quilmes Clásica", pero si es Pepsi Black decimos "Pepsi Black")
+      const nombreLimpio = item.variedad && item.variedad !== 'Clásica' && item.variedad !== 'Regular' && item.variedad !== '0.0%' 
+        ? `${item.marca} ${item.variedad}` 
+        : item.marca;
+
+      div.innerHTML = `
+        <div class="summary-details">
+          <strong>${nombreLimpio}</strong>
+          <span style="color:#6b7280; font-size:12px;">${item.calibre} - ${item.subcategoria}</span>
+        </div>
+        <div class="summary-actions">
+          <span style="font-weight:bold;">${item.precio}</span>
+          <button class="delete-btn" onclick="borrarItem(${item.id})" title="Eliminar">🗑️</button>
+        </div>
+      `;
+      return div;
+    }
+
+    function terminarCarta() {
+      alert("¡Perfecto! Acá conectaríamos con tu Apps Script para procesar los datos ingresados: \n\n" + JSON.stringify(itemsAgregados, null, 2));
+      // En tu web real, acá armarías el Payload y llamarías a tu función de submit
+    }
+
+    // Iniciar
     renderBot();
   </script>
 </body>
