@@ -567,17 +567,43 @@
     }
 
     function cargarCartaIdeal() {
+      // Limpiamos cargas previas
       itemsAgregados = [];
-      const pBase = 4500; 
-      precioBaseCoreGlobal = pBase;
+      
+      // Definimos los precios base de la cerveza Core (Quilmes) para calcular el resto
+      const pBaseLitro = 4500; 
+      const pBaseLata = 3000; 
+      
+      // Calibramos el motor del bot
+      precioBaseCore = pBaseLitro; 
+
       itemsAgregados.push(
-        {id:idCounter++, categoria:"Sin alcohol", subcategoria:"Gaseosas", marca:"Pepsi", variedad:"Black", calibre:"Lata 354ml", precio:"$1800"},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Quilmes", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$${pBase}`, precioHH: `$${Math.round(pBase*0.8)}`},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Andes Origen", variedad:"Rubia", calibre:"Botella 1 Litro", precio:`$${Math.round(pBase*1.1)}`},
-        {id:idCounter++, categoria:"Con alcohol", subcategoria:"Cervezas", marca:"Stella Artois", variedad:"Clásica", calibre:"Botella 1 Litro", precio:`$${Math.round(pBase*1.35)}`}
+        // --- SIN ALCOHOL ---
+        { id: idCounter++, categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Black", calibre: "Lata 354ml", precio: "$1800" },
+        { id: idCounter++, categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Regular", calibre: "Lata 354ml", precio: "$1800" },
+        { id: idCounter++, categoria: "Sin alcohol", subcategoria: "Aguas", marca: "Eco de los Andes", variedad: "Sin Gas", calibre: "500ml", precio: "$1500" },
+        // La cerveza sin alcohol figura en la DB bajo la rama de "Con alcohol > Cervezas" por la marca
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "0.0% alcohol", calibre: "Lata 473ml", precio: `$${Math.round(pBaseLata * 1.35)}` },
+
+        // --- CON ALCOHOL (CERVEZAS) ---
+        // Core (Base)
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Quilmes", variedad: "Clásica", calibre: "Botella 1 Litro", precio: `$${pBaseLitro}`, precioHH: `$${Math.round(pBaseLitro * 0.8)}` },
+        // Core Plus (+10%)
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "IPA", calibre: "Botella 1 Litro", precio: `$${Math.round(pBaseLitro * 1.10)}` },
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "Roja", calibre: "Botella 1 Litro", precio: `$${Math.round(pBaseLitro * 1.10)}` },
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Michelob Ultra", variedad: "Clásica", calibre: "Lata 473ml", precio: `$${Math.round(pBaseLata * 1.10)}` },
+        // High End (+35%)
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Botella 1 Litro", precio: `$${Math.round(pBaseLitro * 1.35)}` },
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Lata 473ml", precio: `$${Math.round(pBaseLata * 1.35)}` },
+
+        // --- COMBOS ---
+        { id: idCounter++, categoria: "Combos", subcategoria: "Cervezas", marca: "Combo Quilmes + Hamburguesa", variedad: "", calibre: "Promo Quilmes", precio: "$8500" },
+        { id: idCounter++, categoria: "Combos", subcategoria: "Gaseosas", marca: "Combo Pepsi + Papas Cheddar", variedad: "", calibre: "Promo Pepsi", precio: "$6000" }
       );
+      
       resetBot();
     }
+    
 
     // ==========================================
     // 5. ENVÍO A BACKEND (PDF Y DOC)
