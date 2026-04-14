@@ -3,47 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Menú - Carga Masiva</title>
+  <title>Menú Digital Pro - Carga Masiva y Optimizado</title>
   <style>
     /* ESTILOS GENERALES */
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
     .bot-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; width: 100%; max-width: 550px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     
-    /* PANTALLA CONFIGURACIÓN */
+    /* ONBOARDING */
     #onboardingScreen { text-align: center; }
     .onboard-group { text-align: left; margin-bottom: 16px; }
     .onboard-group label { display: block; font-size: 13px; font-weight: bold; color: #374151; margin-bottom: 6px; }
     .onboard-group input, .onboard-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
-    #logoPreview { max-width: 100px; margin-top: 10px; display: none; border-radius: 8px; border: 1px solid #e5e7eb; }
+    .onboard-group input[type="file"] { border: 2px dashed #d1d5db; background: #f9fafb; cursor: pointer; padding: 20px; text-align: center; color: #6b7280; }
+    #logoPreview { max-width: 100px; margin-top: 10px; display: none; border-radius: 8px; border: 1px solid #e5e7eb; margin-left: auto; margin-right: auto; }
 
-    /* BOT INTERFACE */
+    /* BOT INTERFACE & BOTONES */
     .chat-bubble { background: #f3f4f6; color: #111827; padding: 14px 18px; border-radius: 16px 16px 16px 0; font-size: 15px; line-height: 1.5; margin-bottom: 16px; display: inline-block; max-width: 90%; }
     .options-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
     .option-btn { background: #ffffff; border: 1px solid #d1d5db; border-radius: 20px; padding: 10px 18px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.2s; }
     .option-btn:hover { background: #111111; color: #fff; border-color: #111111; }
-    
-    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; max-height: 300px; overflow-y: auto; padding: 5px; border: 1px solid #f3f4f6; border-radius: 8px; }
-    .checkbox-item { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; cursor: pointer; transition: 0.2s; }
-    .checkbox-item:hover { background: #eff6ff; border-color: #3b82f6; }
-    .checkbox-item input { width: 18px; height: 18px; cursor: pointer; }
-
     .action-btn { background: #111111; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px; }
     .action-btn:disabled { background: #9ca3af; }
+    .restart-btn { background: transparent; color: #6b7280; border: none; font-size: 13px; text-decoration: underline; cursor: pointer; margin-top: 15px; display: block; }
+    
+    /* GRID CHECKBOXES Y PRECIOS */
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; max-height: 350px; overflow-y: auto; padding: 5px; border: 1px solid #f3f4f6; border-radius: 8px; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; cursor: pointer; }
+    .checkbox-item:hover { background: #eff6ff; border-color: #3b82f6; }
+    .prices-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+    .price-row { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; gap: 10px; flex-wrap: wrap; }
+    .price-inputs { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-grow: 1; }
+    .price-row input, .form-input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box; }
+    .price-row input { width: 90px; text-align: right; font-weight: bold; }
+    .hh-toggle-container { background: #fff7ed; border: 1px solid #fdba74; padding: 12px; border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #c2410c; font-weight: bold; }
 
-    /* RESUMEN */
+    /* RESUMEN, DRAG & DROP Y EDICIÓN */
     .summary-container { margin-top: 30px; border-top: 2px dashed #e5e7eb; padding-top: 20px; }
     .category-section { margin-bottom: 24px; display: none; }
     .category-title { font-size: 16px; font-weight: bold; color: #111827; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
-    .summary-item { background: #fff; border: 1px solid #e5e7eb; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .summary-item { background: #fff; border: 1px solid #e5e7eb; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .summary-item.dragging { opacity: 0.4; border: 2px dashed #9ca3af; }
+    .summary-item.over { border-top: 3px solid #3b82f6; }
+    .drag-handle { cursor: grab; color: #9ca3af; margin-right: 8px; font-size: 18px; user-select: none; }
+    .summary-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+    .summary-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .delete-btn, .edit-btn { border: none; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .delete-btn { background: #fee2e2; color: #991b1b; }
+    .edit-btn { background: #e0f2fe; color: #0369a1; }
+    .hh-badge { background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
 
     /* TOAST SUGERENCIAS */
     #toastSugerencia { position: fixed; bottom: 30px; right: 30px; background: #fff; border-left: 5px solid #3b82f6; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; width: 340px; transform: translateX(130%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
     #toastSugerencia.show { transform: translateX(0); }
     .apply-btn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-    /* ÉXITO */
+    /* ÉXITO Y QR */
     .success-screen { text-align: center; display: none; }
     .qr-box { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e5e7eb; display: inline-block; margin: 20px 0; }
+    .btn-download-pdf { background: #dc2626; color: white; margin-bottom: 10px; text-decoration: none; display: block; padding: 12px; border-radius: 10px; font-weight: bold; }
+    .btn-download-doc { background: #2563eb; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -58,7 +76,7 @@
         <input type="text" id="confNombre" placeholder="Ej: Mi Bar">
       </div>
       <div class="onboard-group">
-        <label>Dirección</label>
+        <label>Dirección (Opcional)</label>
         <input type="text" id="confDir" placeholder="Ej: Calle 123">
       </div>
       <div class="onboard-group">
@@ -81,6 +99,7 @@
       <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
         <button onclick="cargarCartaIdeal()" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:bold; cursor:pointer;">✨ Cargar Carta Ideal</button>
       </div>
+      
       <div id="botInterface"></div>
       
       <div class="summary-container">
@@ -89,22 +108,22 @@
         <div id="sectionSinAlcohol" class="category-section"><h4 class="category-title">🥤 Sin Alcohol</h4><div id="listSinAlcohol"></div></div>
         <div id="sectionConAlcohol" class="category-section"><h4 class="category-title">🍺 Cervezas</h4><div id="listConAlcohol"></div></div>
         <div id="sectionTragos" class="category-section"><h4 class="category-title">🍹 Tragos</h4><div id="listTragos"></div></div>
-        <button id="btnTerminar" class="action-btn" style="background:#059669; display:none;" onclick="terminarCarta()">Generar Menú y PDF</button>
+        <button id="btnTerminar" class="action-btn" style="background:#059669; display:none;" onclick="terminarCarta()">Generar Menú, Doc y PDF</button>
       </div>
     </div>
 
     <div id="successScreen" class="success-screen">
       <h2>🎉 ¡Menú Generado!</h2>
       <p>Ya podés descargar los archivos de tu carta.</p>
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-        <a id="btnPdf" class="action-btn" style="background: #dc2626; text-decoration: none;" target="_blank">📄 Descargar PDF</a>
-        <a id="btnDoc" class="action-btn" style="background: #2563eb; text-decoration: none;" target="_blank">📝 Ver Google Doc</a>
+      <div style="display: flex; flex-direction: column; max-width: 300px; margin: 20px auto;">
+        <a id="btnPdf" class="btn-download-pdf" target="_blank">📄 Descargar PDF</a>
+        <a id="btnDoc" class="btn-download-doc" target="_blank">📝 Ver Google Doc</a>
       </div>
       <div class="qr-box">
         <img id="qrImage" src="" alt="QR">
         <p style="font-size:11px; color:#6b7280; margin-top:10px;">Escaneá para ver online</p>
       </div>
-      <button class="action-btn" style="background:transparent; color:#6b7280; text-decoration:underline;" onclick="location.reload()">Reiniciar</button>
+      <button class="action-btn" style="background:transparent; color:#6b7280; text-decoration:underline;" onclick="location.reload()">Armar nueva carta</button>
     </div>
   </div>
 
@@ -118,11 +137,11 @@
     
     let db = {}, restauranteConfig = {}, logoBase64 = "";
     let precioBaseCore = 0, sugerenciaActual = null;
-    let itemsAgregados = [], idCounter = 0, currentStep = 1, tempSelection = {};
+    let itemsAgregados = [], idCounter = 0, currentStep = 1, tempSelection = {}, ordenManualActivado = false;
 
     const segmentOrder = { "1890": 1, "Quilmes": 2, "Brahma": 2, "Budweiser": 2, "Michelob Ultra": 3, "Andes Origen": 3, "Stella Artois": 4, "Patagonia": 4, "Corona": 4 };
 
-    // --- CARGA Y LOGO ---
+    // --- INIT & ONBOARDING ---
     function procesarLogo(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -146,14 +165,14 @@
 
     function iniciarApp() {
       const nom = document.getElementById('confNombre').value.trim();
-      if (!nom) return alert("Por favor, ingresá el nombre.");
+      if (!nom) return alert("Por favor, ingresá el nombre del local.");
       restauranteConfig = { nombreLocal: nom, direccion: document.getElementById('confDir').value, estilo: document.getElementById('confEstilo').value, logoBase64: logoBase64 };
       document.getElementById('onboardingScreen').style.display = 'none';
       document.getElementById('mainAppContent').style.display = 'block';
       renderBot();
     }
 
-    // --- MOTOR DE PRECIOS ---
+    // --- AUTO-PRICING ---
     function capturarBase(marca, valor) {
       if (precioBaseCore > 0) return;
       let p = parseFloat(valor.replace(/[^0-9.]/g, ''));
@@ -165,7 +184,7 @@
       else precioBaseCore = p;
       
       precioBaseCore = Math.round(precioBaseCore);
-      document.getElementById('toastContent').innerHTML = `<b style="color:#059669">🎯 Estrategia Calibrada</b><br><small>Base Core detectada: $${precioBaseCore}. Ahora aplicaremos los Gaps automáticamente.</small>`;
+      document.getElementById('toastContent').innerHTML = `<b style="color:#059669">🎯 Estrategia Calibrada</b><br><small>Base Core detectada: $${precioBaseCore}. Al tocar las otras bebidas te sugeriremos los precios.</small>`;
       document.getElementById('toastSugerencia').classList.add('show');
       setTimeout(cerrarToast, 5000);
     }
@@ -183,7 +202,7 @@
       }
       document.getElementById(inputId).placeholder = `$${sug}`;
       sugerenciaActual = { val: sug, input: inputId };
-      document.getElementById('toastContent').innerHTML = `Sugerencia para ${marca}: <b>$${sug}</b><br><button class="apply-btn" onclick="aplicarSug()">Aplicar sugerencia</button>`;
+      document.getElementById('toastContent').innerHTML = `Sugerencia matemática para ${marca}: <b>$${sug}</b><br><button class="apply-btn" onclick="aplicarSug()">Aplicar sugerencia</button>`;
       document.getElementById('toastSugerencia').classList.add('show');
     }
 
@@ -194,105 +213,240 @@
     }
     function cerrarToast() { document.getElementById('toastSugerencia').classList.remove('show'); }
 
-    // --- BOT LOGIC (CON CARGA MASIVA) ---
+    // --- UI HELPERS ---
+    function bubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.innerText = t; return d; }
+    function options(a, cb) { let c = document.createElement('div'); c.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o; b.onclick = () => cb(o); c.appendChild(b); }); return c; }
+    function createBackBtn(step) { let b = document.createElement('button'); b.className = 'restart-btn'; b.innerText = '← Volver'; b.onclick = () => { currentStep = step; renderBot(); }; return b; }
+    function formatP(v) { return !v ? 'A definir' : (v.startsWith('$') ? v : `$${v}`); }
+    function resetBot() { currentStep = 1; tempSelection = {}; cerrarToast(); ordenarItems(); actualizarListas(); renderBot(); }
+
+    // --- FLUJO DEL BOT (CON CARGA MASIVA Y BACK BUTTONS) ---
     function renderBot() {
       const container = document.getElementById('botInterface');
       container.innerHTML = '';
       
       if (currentStep === 1) {
         container.append(bubble("¿Qué agregamos hoy?"), options(['🍺 Cervezas (Múltiple)', '🍹 Tragos', '🥤 Sin alcohol', '🍔 Combos'], (s) => { 
-          if (s.includes('Cervezas')) {
-            tempSelection.cat = 'Con alcohol'; tempSelection.sub = 'Cervezas'; currentStep = 'bulk_brands';
-          } else if (s.includes('Tragos')) {
-            tempSelection.cat = 'Con alcohol'; tempSelection.sub = 'Tragos'; currentStep = 't_form';
-          } else if (s.includes('alcohol')) {
-            tempSelection.cat = 'Sin alcohol'; currentStep = 2;
-          } else {
-            currentStep = 'c1';
-          }
+          if (s.includes('Cervezas')) { tempSelection.cat = 'Con alcohol'; tempSelection.sub = 'Cervezas'; currentStep = 'bulk_brands'; }
+          else if (s.includes('Tragos')) { tempSelection.cat = 'Con alcohol'; tempSelection.sub = 'Tragos'; currentStep = 't_form'; }
+          else if (s.includes('alcohol')) { tempSelection.cat = 'Sin alcohol'; currentStep = 2; }
+          else { currentStep = 'c1'; }
           renderBot(); 
         }));
       } 
+      // FLUJO MASIVO CERVEZAS
       else if (currentStep === 'bulk_brands') {
-        container.append(bubble("Seleccioná todas las marcas que quieras sumar:"));
+        container.append(bubble("Seleccioná las marcas que quieras sumar:"));
         let grid = document.createElement('div'); grid.className = 'checkbox-grid';
-        let marcas = Object.keys(db[tempSelection.cat][tempSelection.sub]);
-        marcas.forEach(m => {
+        Object.keys(db[tempSelection.cat][tempSelection.sub]).forEach(m => {
           grid.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${m}"> ${m}</label>`;
         });
-        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Continuar a Variedades';
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Continuar';
         b.onclick = () => {
           let selected = Array.from(grid.querySelectorAll('input:checked')).map(i => i.value);
           if (selected.length === 0) return alert("Elegí al menos una marca.");
-          tempSelection.marcasSeleccionadas = selected;
-          currentStep = 'bulk_varieties';
-          renderBot();
+          tempSelection.marcas = selected; currentStep = 'bulk_varieties'; renderBot();
         };
-        container.append(grid, b);
+        container.append(grid, b, createBackBtn(1));
       }
       else if (currentStep === 'bulk_varieties') {
-        container.append(bubble("Ahora elegí las variedades y calibres específicos:"));
+        container.append(bubble("Elegí las variedades y calibres:"));
         let grid = document.createElement('div'); grid.className = 'checkbox-grid';
-        tempSelection.marcasSeleccionadas.forEach(m => {
+        
+        tempSelection.marcas.forEach(m => {
           let data = db[tempSelection.cat][tempSelection.sub][m];
-          data.var.forEach(v => {
+          // Solución: Si no hay variedades (ej: Corona Cero), forzamos un string vacío para mapear los calibres
+          let variedades = data.var.length > 0 ? data.var : ['']; 
+          
+          variedades.forEach(v => {
             data.cal.forEach(c => {
               let label = v ? `${m} ${v} (${c})` : `${m} (${c})`;
               grid.innerHTML += `<label class="checkbox-item"><input type="checkbox" data-marca="${m}" data-var="${v}" data-cal="${c}"> ${label}</label>`;
             });
           });
         });
-        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Confirmar y poner Precios';
+
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Poner Precios';
         b.onclick = () => {
-          let items = Array.from(grid.querySelectorAll('input:checked')).map(i => ({
-            marca: i.dataset.marca, variedad: i.dataset.var, calibre: i.dataset.cal
-          }));
-          if (items.length === 0) return alert("Elegí al menos un ítem.");
-          tempSelection.itemsMasivos = items;
-          currentStep = 'bulk_prices';
-          renderBot();
+          let items = Array.from(grid.querySelectorAll('input:checked')).map(i => ({ marca: i.dataset.marca, variedad: i.dataset.var, calibre: i.dataset.cal }));
+          if (items.length === 0) return alert("Tildá al menos un ítem.");
+          tempSelection.itemsMasivos = items; currentStep = 'bulk_prices'; renderBot();
         };
-        container.append(grid, b);
+        container.append(grid, b, createBackBtn('bulk_brands'));
       }
       else if (currentStep === 'bulk_prices') {
-        container.append(bubble("Ingresá los precios. Recordá que la primera cerveza Core calibrará el resto:"));
+        container.append(bubble("Ingresá los precios (La primera cerveza Core calibra las demás):"));
+        
+        // Happy Hour Toggle
+        let hhContainer = document.createElement('div'); 
+        hhContainer.innerHTML = `<div class="hh-toggle-container"><input type="checkbox" id="globalHHToggle" onchange="toggleHHTemp(this.checked)"><label for="globalHHToggle" style="margin:0; cursor:pointer;">Activar Happy Hour</label></div>`;
+        
         let grid = document.createElement('div'); grid.className = 'prices-grid';
         tempSelection.itemsMasivos.forEach((it, i) => {
-          let inputId = `price_${i}`;
           grid.innerHTML += `
             <div class="price-row">
               <div><b>${it.marca} ${it.variedad}</b><br><small>${it.calibre}</small></div>
-              <input type="text" id="${inputId}" placeholder="$" 
-                     onfocus="sugerir('${it.marca}', '${tempSelection.sub}', '${inputId}')"
-                     onblur="capturarBase('${it.marca}', this.value)">
+              <div class="price-inputs">
+                <input type="text" id="price_${i}" placeholder="$" onfocus="sugerir('${it.marca}', '${tempSelection.sub}', 'price_${i}')" onblur="capturarBase('${it.marca}', this.value)">
+                <input type="text" id="priceHH_${i}" placeholder="HH $" style="display:none; border-color:#f97316;">
+              </div>
             </div>`;
         });
-        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Guardar todo en la Carta';
+        
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Guardar Todo en la Carta';
         b.onclick = () => {
+          const useHH = document.getElementById('globalHHToggle').checked;
           tempSelection.itemsMasivos.forEach((it, i) => {
-            itemsAgregados.push({ id: idCounter++, categoria: tempSelection.cat, subcategoria: tempSelection.sub, marca: it.marca, variedad: it.variedad, calibre: it.calibre, precio: formatP(document.getElementById(`price_${i}`).value) });
+            let pNormal = document.getElementById(`price_${i}`).value;
+            let pHH = useHH ? document.getElementById(`priceHH_${i}`).value : null;
+            itemsAgregados.push({ id: idCounter++, categoria: tempSelection.cat, subcategoria: tempSelection.sub, marca: it.marca, variedad: it.variedad, calibre: it.calibre, precio: formatP(pNormal), precioHH: pHH ? formatP(pHH) : null });
           });
           resetBot();
         };
-        container.append(grid, b);
+        container.append(hhContainer, grid, b, createBackBtn('bulk_varieties'));
       }
-      // ... (Mantenemos los pasos de Tragos y Combos igual) ...
+      
+      // FLUJO NORMAL: SIN ALCOHOL
       else if (currentStep === 2) {
-        container.append(bubble("¿Subcategoría?"), options(Object.keys(db[tempSelection.cat]), (s) => { tempSelection.sub = s; currentStep = 'bulk_brands'; renderBot(); }));
+        container.append(bubble("¿Subcategoría?"), options(Object.keys(db[tempSelection.cat]), (s) => { tempSelection.sub = s; currentStep = 3; renderBot(); }), createBackBtn(1));
       }
+      else if (currentStep === 3) {
+        container.append(bubble("¿Marca?"), options(Object.keys(db[tempSelection.cat][tempSelection.sub]), (s) => { tempSelection.marca = s; currentStep = 4; renderBot(); }), createBackBtn(2));
+      }
+      else if (currentStep === 4) {
+        let d = db[tempSelection.cat][tempSelection.sub][tempSelection.marca];
+        let grid = document.createElement('div'); grid.className = 'checkbox-grid';
+        d.var.forEach(v => grid.innerHTML += `<label class="checkbox-item"><input type="checkbox" value="${v}"> ${v}</label>`);
+        let sel = document.createElement('select'); sel.className = 'form-input'; sel.id='cSel';
+        d.cal.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Continuar';
+        b.onclick = () => {
+          let chks = Array.from(grid.querySelectorAll('input:checked'));
+          tempSelection.items = d.var.length === 0 ? [{v:'', c:sel.value}] : chks.map(c => ({v:c.value, c:sel.value}));
+          if(tempSelection.items.length === 0 && d.var.length > 0) return alert("Elegí al menos una variedad.");
+          currentStep = 5; renderBot();
+        };
+        container.append(bubble("Seleccioná:"), grid, sel, b, createBackBtn(3));
+      }
+      else if (currentStep === 5) {
+        let grid = document.createElement('div'); grid.className = 'prices-grid';
+        tempSelection.items.forEach((it, i) => {
+          grid.innerHTML += `<div class="price-row"><div><b>${tempSelection.marca} ${it.v}</b><br>${it.c}</div><input type="text" id="price_${i}" placeholder="$"></div>`;
+        });
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Guardar';
+        b.onclick = () => {
+          tempSelection.items.forEach((it, i) => {
+            itemsAgregados.push({ id: idCounter++, categoria: tempSelection.cat, subcategoria: tempSelection.sub, marca: tempSelection.marca, variedad: it.v, calibre: it.c, precio: formatP(document.getElementById(`price_${i}`).value) });
+          });
+          resetBot();
+        };
+        container.append(bubble("Ingresá precios:"), grid, b, createBackBtn(4));
+      }
+
+      // TRAGOS
       else if (currentStep === 't_form') {
         let f = document.createElement('div');
         f.innerHTML = `<div class="form-group"><label>Nombre del Trago</label><input type="text" id="tN" class="form-input"></div><div class="form-group"><label>Precio</label><input type="text" id="price_t" class="form-input" onfocus="sugerir('Trago','Tragos','price_t')"></div>`;
         let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Guardar';
-        b.onclick = () => { itemsAgregados.push({ id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tN').value, variedad: '', calibre: 'Vaso', precio: formatP(document.getElementById('price_t').value) }); resetBot(); };
-        container.append(bubble("Cargá el trago:"), f, b);
+        b.onclick = () => { 
+          if(!document.getElementById('tN').value) return alert("Completá el nombre.");
+          itemsAgregados.push({ id: idCounter++, categoria: 'Con alcohol', subcategoria: 'Tragos', marca: document.getElementById('tN').value, variedad: '', calibre: 'Vaso', precio: formatP(document.getElementById('price_t').value) }); resetBot(); 
+        };
+        container.append(bubble("Cargá el trago:"), f, b, createBackBtn(1));
+      }
+
+      // COMBOS
+      else if (currentStep === 'c1') {
+        container.append(bubble("¿Bebida del combo?"), options(['Gaseosas', 'Cervezas'], (s) => { tempSelection.comboT = s; currentStep = 'c2'; renderBot(); }), createBackBtn(1));
+      }
+      else if (currentStep === 'c2') {
+        let path = tempSelection.comboT === 'Gaseosas' ? db['Sin alcohol']['Gaseosas'] : db['Con alcohol']['Cervezas'];
+        container.append(bubble("¿Marca?"), options(Object.keys(path), (s) => { tempSelection.marca = s; currentStep = 'c3'; renderBot(); }), createBackBtn('c1'));
+      }
+      else if (currentStep === 'c3') {
+        let f = document.createElement('div');
+        f.innerHTML = `<div class="form-group"><label>Comida</label><input type="text" id="cCom" class="form-input" placeholder="Ej: Hamburguesa"></div><div class="form-group"><label>Precio</label><input type="text" id="cP" class="form-input"></div>`;
+        let b = document.createElement('button'); b.className = 'action-btn'; b.innerText = 'Guardar Combo';
+        b.onclick = () => {
+          if(!document.getElementById('cCom').value) return alert("Falta comida.");
+          itemsAgregados.push({ id: idCounter++, categoria: 'Combos', subcategoria: tempSelection.comboT, marca: `Combo ${tempSelection.marca} + ${document.getElementById('cCom').value}`, variedad: '', calibre: `Promo ${tempSelection.marca}`, precio: formatP(document.getElementById('cP').value) });
+          resetBot();
+        };
+        container.append(bubble("Detalles del combo:"), f, b, createBackBtn('c2'));
       }
     }
 
-    function bubble(t) { let d = document.createElement('div'); d.className = 'chat-bubble'; d.innerText = t; return d; }
-    function options(a, cb) { let c = document.createElement('div'); c.className = 'options-container'; a.forEach(o => { let b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o; b.onclick = () => cb(o); c.appendChild(b); }); return c; }
-    function formatP(v) { return !v ? 'A definir' : (v.startsWith('$') ? v : `$${v}`); }
-    function resetBot() { currentStep = 1; tempSelection = {}; actualizarListas(); renderBot(); }
+    function toggleHHTemp(show) {
+      tempSelection.itemsMasivos.forEach((_, i) => document.getElementById(`priceHH_${i}`).style.display = show ? 'block' : 'none');
+    }
+
+    // --- DRAG & DROP Y EDICIÓN ---
+    let draggedId = null;
+    function handleDragStart(e) { draggedId = this.dataset.id; e.dataTransfer.effectAllowed = 'move'; this.classList.add('dragging'); }
+    function handleDragOver(e) { e.preventDefault(); return false; }
+    function handleDragEnter(e) { this.classList.add('over'); }
+    function handleDragLeave(e) { this.classList.remove('over'); }
+    function handleDragEnd(e) { this.classList.remove('dragging'); document.querySelectorAll('.summary-item').forEach(i => i.classList.remove('over')); }
+    function handleDrop(e) {
+      e.stopPropagation(); const targetId = this.dataset.id;
+      if (draggedId !== targetId) {
+        const fromIdx = itemsAgregados.findIndex(i => i.id == draggedId); const toIdx = itemsAgregados.findIndex(i => i.id == targetId);
+        if (itemsAgregados[fromIdx].categoria === itemsAgregados[toIdx].categoria) {
+          const [movedItem] = itemsAgregados.splice(fromIdx, 1); itemsAgregados.splice(toIdx, 0, movedItem);
+          ordenManualActivado = true; actualizarListas();
+        }
+      }
+      return false;
+    }
+
+    function ordenarItems() {
+      if (ordenManualActivado) return;
+      itemsAgregados.sort((a, b) => {
+        const catOrder = {"Combos": 1, "Sin alcohol": 2, "Con alcohol": 3};
+        if (catOrder[a.categoria] !== catOrder[b.categoria]) return catOrder[a.categoria] - catOrder[b.categoria];
+        if (a.categoria === 'Con alcohol' && a.subcategoria !== 'Tragos' && b.categoria === 'Con alcohol' && b.subcategoria !== 'Tragos') {
+          const rankA = getSegmentRank(a.marca); const rankB = getSegmentRank(b.marca);
+          if (rankA !== rankB) return rankA - rankB;
+          if (a.marca !== b.marca) return a.marca.localeCompare(b.marca);
+          return a.variedad.localeCompare(b.variedad);
+        }
+        return 0; 
+      });
+    }
+
+    function editarItem(id) {
+      const div = document.querySelector(`.summary-item[data-id="${id}"]`);
+      if(!div) return; div.draggable = false;
+      const item = itemsAgregados.find(i => i.id == id);
+      let nomLimpio = (item.categoria !== 'Combos' && item.variedad && !['Clásica','Regular','0.0% alcohol'].includes(item.variedad)) ? `${item.marca} ${item.variedad}` : item.marca;
+
+      div.innerHTML = `
+        <div class="summary-details">
+          <input type="text" id="edit_n_${id}" class="form-input" style="padding:4px; font-weight:bold; margin-bottom:4px;" value="${nomLimpio}">
+          <input type="text" id="edit_c_${id}" class="form-input" style="padding:4px; font-size:12px;" value="${item.calibre}">
+        </div>
+        <div class="summary-actions" style="flex-direction:column; align-items:flex-end;">
+          <div style="display:flex; gap:4px;">
+            <input type="text" id="edit_p_${id}" class="form-input" style="width:60px; padding:4px; text-align:right;" value="${item.precio}" placeholder="Normal">
+            <input type="text" id="edit_pHH_${id}" class="form-input" style="width:60px; padding:4px; text-align:right; border-color:#f97316;" value="${item.precioHH || ''}" placeholder="HH">
+          </div>
+          <div style="display:flex; gap:4px; margin-top:4px;">
+            <button class="action-btn" style="padding:4px 8px; margin:0; font-size:12px;" onclick="guardarEdicion(${id})">💾</button>
+            <button class="delete-btn" onclick="borrarItem(${id})">❌</button>
+          </div>
+        </div>`;
+    }
+
+    function guardarEdicion(id) {
+      const idx = itemsAgregados.findIndex(i => i.id == id);
+      if (idx > -1) {
+        itemsAgregados[idx].marca = document.getElementById(`edit_n_${id}`).value; itemsAgregados[idx].variedad = ''; itemsAgregados[idx].calibre = document.getElementById(`edit_c_${id}`).value;
+        itemsAgregados[idx].precio = formatP(document.getElementById(`edit_p_${id}`).value); 
+        let hh = document.getElementById(`edit_pHH_${id}`).value; itemsAgregados[idx].precioHH = hh ? formatP(hh) : null;
+      }
+      actualizarListas();
+    }
+    function borrarItem(id) { itemsAgregados = itemsAgregados.filter(i => i.id != id); actualizarListas(); }
 
     function actualizarListas() {
       const sections = {
@@ -302,12 +456,23 @@
         "Combos": { container: document.getElementById('sectionCombos'), list: document.getElementById('listCombos') }
       };
       Object.keys(sections).forEach(k => { sections[k].list.innerHTML = ''; sections[k].container.style.display = 'none'; });
+      
       if (itemsAgregados.length === 0) { document.getElementById('emptyState').style.display='block'; document.getElementById('btnTerminar').style.display='none'; return; }
+      
       document.getElementById('emptyState').style.display='none'; document.getElementById('btnTerminar').style.display='block';
       itemsAgregados.forEach(it => {
         let k = it.categoria; if(it.subcategoria==='Tragos') k = 'Tragos';
         sections[k].container.style.display = 'block';
-        let d = document.createElement('div'); d.className = 'summary-item'; d.innerHTML = `<div><b>${it.marca} ${it.variedad}</b><br><small>${it.calibre}</small></div><div style="font-weight:bold; color:#059669">${it.precio}</div>`;
+        
+        let d = document.createElement('div'); d.className = 'summary-item'; d.dataset.id = it.id; d.draggable = true;
+        d.addEventListener('dragstart', handleDragStart); d.addEventListener('dragover', handleDragOver); d.addEventListener('dragenter', handleDragEnter); d.addEventListener('dragleave', handleDragLeave); d.addEventListener('drop', handleDrop); d.addEventListener('dragend', handleDragEnd);
+
+        let nomLimpio = (it.categoria !== 'Combos' && it.variedad && !['Clásica','Regular','0.0% alcohol'].includes(it.variedad)) ? `${it.marca} ${it.variedad}` : it.marca;
+        let precioHTML = it.precioHH ? `<div style="text-align:right;"><span class="hh-badge">HH: ${it.precioHH}</span><br><span style="text-decoration:line-through; color:#9ca3af; font-size:12px;">${it.precio}</span></div>` : `<span style="font-weight:bold; font-size:15px; color:#059669;">${it.precio}</span>`;
+
+        d.innerHTML = `
+          <div class="summary-details"><b><span class="drag-handle" title="Arrastrar">⠿</span>${nomLimpio}</b><span style="color:#6b7280; font-size:12px;">${it.calibre}</span></div>
+          <div class="summary-actions">${precioHTML}<button class="edit-btn" onclick="editarItem(${it.id})">✏️</button><button class="delete-btn" onclick="borrarItem(${it.id})">🗑️</button></div>`;
         sections[k].list.appendChild(d);
       });
     }
@@ -316,7 +481,7 @@
       const pBase = 4500; precioBaseCore = pBase;
       itemsAgregados = [
         { id: idCounter++, categoria: "Sin alcohol", subcategoria: "Gaseosas", marca: "Pepsi", variedad: "Black", calibre: "Lata 354ml", precio: "$1800" },
-        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Quilmes", variedad: "Clásica", calibre: "Botella 1 Litro", precio: `$${pBase}` },
+        { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Quilmes", variedad: "Clásica", calibre: "Botella 1 Litro", precio: `$${pBase}`, precioHH: `$${Math.round(pBase*0.8)}` },
         { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Andes Origen", variedad: "Rubia", calibre: "Botella 1 Litro", precio: `$${Math.round(pBase*1.1)}` },
         { id: idCounter++, categoria: "Con alcohol", subcategoria: "Cervezas", marca: "Stella Artois", variedad: "Clásica", calibre: "Botella 1 Litro", precio: `$${Math.round(pBase*1.35)}` }
       ];
@@ -325,7 +490,7 @@
 
     async function terminarCarta() {
       const btn = document.getElementById('btnTerminar');
-      btn.disabled = true; btn.innerText = "Enviando...";
+      btn.disabled = true; btn.innerText = "Enviando a Google Docs...";
       try {
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ items: itemsAgregados, config: restauranteConfig }) });
         const r = await res.json();
@@ -336,7 +501,7 @@
           document.getElementById('btnDoc').href = r.url;
           document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(r.url)}`;
         }
-      } catch(e) { alert("Error al generar."); btn.disabled = false; btn.innerText = "Generar Menú y PDF"; }
+      } catch(e) { alert("Error al generar los documentos."); btn.disabled = false; btn.innerText = "Generar Menú y PDF"; }
     }
 
     init();
